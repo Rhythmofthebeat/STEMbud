@@ -4,11 +4,11 @@ import { supabase } from '../lib/supabase';
 
 const BADGE_DEFS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = [
   { id: 'newcomer',      emoji: '🌱', name: 'Newcomer',       description: 'Sent your first message!',      minutesRequired: 0 },
-  { id: 'quick-learner', emoji: '⚡', name: 'Quick Learner',  description: '20 minutes of learning!',       minutesRequired: 20 },
-  { id: 'explorer',      emoji: '🔬', name: 'STEM Explorer',  description: '1 hour of exploration!',        minutesRequired: 60 },
-  { id: 'deep-thinker',  emoji: '🧠', name: 'Deep Thinker',   description: '2 hours of deep thinking!',     minutesRequired: 120 },
-  { id: 'champion',      emoji: '🚀', name: 'STEM Champion',  description: '4 hours of excellence!',        minutesRequired: 240 },
-  { id: 'master',        emoji: '💎', name: 'STEM Master',    description: '8 hours of mastery!',           minutesRequired: 480 },
+  { id: 'quick-learner', emoji: '⚡', name: 'Quick Learner',  description: '30 minutes of learning!',       minutesRequired: 30 },
+  { id: 'explorer',      emoji: '🔬', name: 'STEM Explorer',  description: '1.5 hours of exploration!',     minutesRequired: 90 },
+  { id: 'deep-thinker',  emoji: '🧠', name: 'Deep Thinker',   description: '3 hours of deep thinking!',     minutesRequired: 180 },
+  { id: 'champion',      emoji: '🚀', name: 'STEM Champion',  description: '6 hours of excellence!',        minutesRequired: 360 },
+  { id: 'master',        emoji: '💎', name: 'STEM Master',    description: '12 hours of mastery!',          minutesRequired: 720 },
 ];
 
 const MINUTES_KEY = 'stembud_minutes';
