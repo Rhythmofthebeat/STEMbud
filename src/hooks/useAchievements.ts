@@ -29,14 +29,20 @@ export function useAchievements(userId: string | null, messageCount: number) {
   const [minutesUsed, setMinutesUsed] = useState(loadMinutes);
   const [unlocked, setUnlocked] = useState<Set<string>>(userId ? new Set() : loadLocalUnlocked);
   const [newBadge, setNewBadge] = useState<Achievement | null>(null);
+  // Guards against re-showing the "unlocked" toast on every reload: for signed-in users the
+  // existing badges load asynchronously, so without this the "first message" unlock check
+  // below could run before we know 'newcomer' was already unlocked in a prior session.
+  const [loaded, setLoaded] = useState(false);
   const unlockedRef = useRef(unlocked);
   unlockedRef.current = unlocked;
 
   // Signed in: load this user's unlocked badges from Supabase.
   // Anonymous: fall back to whatever's saved in this browser.
   useEffect(() => {
+    setLoaded(false);
     if (!userId) {
       setUnlocked(loadLocalUnlocked());
+      setLoaded(true);
       return;
     }
     supabase
@@ -45,6 +51,7 @@ export function useAchievements(userId: string | null, messageCount: number) {
       .eq('user_id', userId)
       .then(({ data }) => {
         setUnlocked(new Set((data ?? []).map((r) => r.badge_id)));
+        setLoaded(true);
       });
   }, [userId]);
 
@@ -68,7 +75,15 @@ export function useAchievements(userId: string | null, messageCount: number) {
     if (!def) return;
     setNewBadge({ ...def, unlocked: true, unlockedAt: Date.now() });
     if (userId) {
-      void supabase.from('achievements').insert({ user_id: userId, badge_id: id });
+      // Note: supabase-js query builders are lazy thenables — they only actually send the
+      // request once awaited or .then()'d. A bare `void builder` (no await/.then) silently
+      // never fires the request at all, which is why this never used to persist.
+      supabase
+        .from('achievements')
+        .insert({ user_id: userId, badge_id: id })
+        .then(({ error }) => {
+          if (error) console.error('Failed to save achievement:', error.message);
+        });
     } else {
       const next = new Set(unlockedRef.current).add(id);
       localStorage.setItem(LOCAL_UNLOCKED_KEY, JSON.stringify([...next]));
@@ -77,18 +92,20 @@ export function useAchievements(userId: string | null, messageCount: number) {
 
   // Unlock newcomer badge on first message
   useEffect(() => {
-    if (messageCount > 0) unlock('newcomer');
-  }, [messageCount]); // eslint-disable-line
+    if (!loaded || messageCount === 0) return;
+    unlock('newcomer');
+  }, [messageCount, loaded]); // eslint-disable-line
 
   // Check time-based badges
   useEffect(() => {
+    if (!loaded) return;
     for (const def of BADGE_DEFS) {
       if (def.minutesRequired > 0 && minutesUsed >= def.minutesRequired && !unlockedRef.current.has(def.id)) {
         unlock(def.id);
         break; // show one toast at a time
       }
     }
-  }, [minutesUsed, unlock]);
+  }, [minutesUsed, unlock, loaded]);
 
   const clearNewBadge = useCallback(() => setNewBadge(null), []);
 

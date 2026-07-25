@@ -27,11 +27,17 @@ export function useStreak(userId: string | null, messageCount: number) {
   const [streak, setStreak] = useState<StreakState>(EMPTY);
   const streakRef = useRef(streak);
   streakRef.current = streak;
+  // Same race this hook's sibling (useAchievements) had: for signed-in users the existing
+  // streak loads asynchronously, so the "record today" check below must wait for it —
+  // otherwise it'd compare against the empty initial state and could clobber a real streak.
+  const [loaded, setLoaded] = useState(false);
 
   // Load this user's (or this browser's) current streak
   useEffect(() => {
+    setLoaded(false);
     if (!userId) {
       setStreak(loadLocalStreak());
+      setLoaded(true);
       return;
     }
     supabase
@@ -45,13 +51,14 @@ export function useStreak(userId: string | null, messageCount: number) {
           longestStreak: data?.longest_streak ?? 0,
           lastActiveDate: data?.last_active_date ?? null,
         });
+        setLoaded(true);
       });
   }, [userId]);
 
   // Record today's activity the first time a message is sent — idempotent per day,
   // so repeat messages or reloads on the same day are safe no-ops.
   useEffect(() => {
-    if (messageCount === 0) return;
+    if (!loaded || messageCount === 0) return;
     const today = localDateStr();
     const prev = streakRef.current;
     if (prev.lastActiveDate === today) return;
@@ -65,18 +72,23 @@ export function useStreak(userId: string | null, messageCount: number) {
     setStreak(next);
 
     if (userId) {
-      void supabase
+      // supabase-js query builders are lazy thenables — a bare `void builder` with no
+      // await/.then() never actually sends the request. Must chain .then() (or await) to fire it.
+      supabase
         .from('profiles')
         .update({
           current_streak: next.currentStreak,
           longest_streak: next.longestStreak,
           last_active_date: next.lastActiveDate,
         })
-        .eq('id', userId);
+        .eq('id', userId)
+        .then(({ error }) => {
+          if (error) console.error('Failed to save streak:', error.message);
+        });
     } else {
       localStorage.setItem(LOCAL_STREAK_KEY, JSON.stringify(next));
     }
-  }, [messageCount, userId]);
+  }, [messageCount, userId, loaded]);
 
   return streak;
 }
