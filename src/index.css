@@ -1159,10 +1159,30 @@ body {
 
 /* ── Input area ── */
 .input-area {
+  position: relative;
   padding: 10px 14px 14px;
   background: var(--surface);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
+  transition: background .15s;
+}
+.input-area.drag-over { background: var(--primary-light); }
+
+.drop-overlay {
+  position: absolute;
+  inset: 6px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary-light);
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-lg);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
 }
 
 .file-chip {

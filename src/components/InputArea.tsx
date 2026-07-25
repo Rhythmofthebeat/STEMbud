@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, type KeyboardEvent, type ChangeEvent } from 'react';
+import { useState, useRef, useCallback, type KeyboardEvent, type ChangeEvent, type DragEvent } from 'react';
 import type { UploadedFile } from '../types';
 
 interface Props {
@@ -13,6 +13,8 @@ interface Props {
 export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, onClearUpload, accessToken }: Props) {
   const [text, setText] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const dragCounter = useRef(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,10 +44,7 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
     ta.style.height = `${Math.min(ta.scrollHeight, 140)}px`;
   };
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    e.target.value = '';
+  const uploadFile = useCallback(async (file: File) => {
     setUploading(true);
     try {
       const form = new FormData();
@@ -63,12 +62,63 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
     } finally {
       setUploading(false);
     }
+  }, [accessToken, onUpload]);
+
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    await uploadFile(file);
+  };
+
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!e.dataTransfer.types.includes('Files') || isLoading || uploading) return;
+    dragCounter.current += 1;
+    setIsDragOver(true);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0;
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    dragCounter.current = 0;
+    setIsDragOver(false);
+    if (isLoading || uploading) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) await uploadFile(file);
   };
 
   const canSend = text.trim().length > 0 && !isLoading && !uploading;
 
   return (
-    <div className="input-area">
+    <div
+      className={`input-area ${isDragOver ? 'drag-over' : ''}`}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {isDragOver && (
+        <div className="drop-overlay">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+            <path d="M10 3v10M6 9l4-4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M4 14v1.5A1.5 1.5 0 0 0 5.5 17h9a1.5 1.5 0 0 0 1.5-1.5V14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+          </svg>
+          Drop your file here
+        </div>
+      )}
       {uploadedFile && (
         <div className="file-chip">
           <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
@@ -94,7 +144,7 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             className="attach-btn"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading || isLoading}
-            title="Attach a document (PDF, DOCX, TXT, or MD) for STEMMY to read"
+            title="Attach a document (PDF, DOCX, TXT, or MD) for STEMMY to read — or drag and drop it here"
           >
             {uploading ? (
               <svg className="spin" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
