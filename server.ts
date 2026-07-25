@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load config
-import config from './config.json';
+import config from './config.json' with { type: 'json' };
 
 const app = express();
 const upload = multer({
