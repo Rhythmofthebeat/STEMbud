@@ -48,7 +48,7 @@ export default function Header({
         </div>
         <div className="header-info">
           <div className="header-title">STEMMY</div>
-          <div className="header-subtitle">AI STEM Tutor · MIS STEMbud</div>
+          <div className="header-subtitle">AI STEM Tutor · Minorities in STEM</div>
         </div>
       </div>
 

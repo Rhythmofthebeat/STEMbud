@@ -3,12 +3,12 @@ import type { Achievement } from '../types';
 import { supabase } from '../lib/supabase';
 
 const BADGE_DEFS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = [
-  { id: 'newcomer',      emoji: '🌱', name: 'Newcomer',       description: 'Sent your first message!',    minutesRequired: 0 },
-  { id: 'quick-learner', emoji: '⚡', name: 'Quick Learner',  description: '5 minutes of learning!',      minutesRequired: 5 },
-  { id: 'explorer',      emoji: '🔬', name: 'STEM Explorer',  description: '15 minutes of exploration!',  minutesRequired: 15 },
-  { id: 'deep-thinker',  emoji: '🧠', name: 'Deep Thinker',   description: '30 minutes of deep thinking!',minutesRequired: 30 },
-  { id: 'champion',      emoji: '🚀', name: 'STEM Champion',  description: '1 hour of excellence!',       minutesRequired: 60 },
-  { id: 'master',        emoji: '💎', name: 'STEM Master',    description: '2 hours of mastery!',         minutesRequired: 120 },
+  { id: 'newcomer',      emoji: '🌱', name: 'Newcomer',       description: 'Sent your first message!',      minutesRequired: 0 },
+  { id: 'quick-learner', emoji: '⚡', name: 'Quick Learner',  description: '20 minutes of learning!',       minutesRequired: 20 },
+  { id: 'explorer',      emoji: '🔬', name: 'STEM Explorer',  description: '1 hour of exploration!',        minutesRequired: 60 },
+  { id: 'deep-thinker',  emoji: '🧠', name: 'Deep Thinker',   description: '2 hours of deep thinking!',     minutesRequired: 120 },
+  { id: 'champion',      emoji: '🚀', name: 'STEM Champion',  description: '4 hours of excellence!',        minutesRequired: 240 },
+  { id: 'master',        emoji: '💎', name: 'STEM Master',    description: '8 hours of mastery!',           minutesRequired: 480 },
 ];
 
 const MINUTES_KEY = 'stembud_minutes';
@@ -98,5 +98,15 @@ export function useAchievements(userId: string | null, messageCount: number) {
     unlockedAt: unlocked.has(def.id) ? Date.now() : undefined,
   }));
 
-  return { achievements, newBadge, clearNewBadge };
+  const nextBadge = BADGE_DEFS.find((d) => d.minutesRequired > 0 && !unlocked.has(d.id));
+  const progress = nextBadge
+    ? {
+        badge: nextBadge,
+        minutesUsed: Math.min(minutesUsed, nextBadge.minutesRequired),
+        minutesRequired: nextBadge.minutesRequired,
+        percent: Math.min(100, Math.round((minutesUsed / nextBadge.minutesRequired) * 100)),
+      }
+    : null; // all badges unlocked
+
+  return { achievements, newBadge, clearNewBadge, progress };
 }

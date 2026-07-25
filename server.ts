@@ -125,16 +125,18 @@ app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
       } as OpenAI.Responses.Tool);
     }
 
-    // Build input — array form needed when attaching a file
+    // Build input — array form with an input_file content part lets the model read
+    // an ad-hoc attachment directly, separate from the persistent vector-store corpus.
     let input: string | OpenAI.Responses.MessageParam[];
     if (uploadedFileId) {
       input = [
         {
           role: 'user',
-          content: `${message}\n\n[A file has been attached to this message. Use file_search to thoroughly read and extract its content — text, problems, data, and any relevant details — before answering.]`,
-          // @ts-ignore – attachments are valid per the Responses API spec
-          attachments: [{ file_id: uploadedFileId, tools: [{ type: 'file_search' }] }],
-        },
+          content: [
+            { type: 'input_text', text: message },
+            { type: 'input_file', file_id: uploadedFileId },
+          ],
+        } as unknown as OpenAI.Responses.MessageParam,
       ];
     } else {
       input = message;
@@ -207,7 +209,7 @@ app.post('/api/upload', attachUser, anonUsageLimiter, upload.single('file'), asy
   try {
     const file = await openai.files.create({
       file: new File([req.file.buffer], req.file.originalname, { type: req.file.mimetype }),
-      purpose: 'assistants',
+      purpose: 'user_data',
     });
     res.json({ fileId: file.id, filename: req.file.originalname });
   } catch (err) {

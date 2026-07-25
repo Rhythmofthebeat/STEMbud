@@ -57,7 +57,7 @@ export default function App() {
   } = useChat(userId, accessToken, () =>
     openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
   );
-  const { achievements, newBadge, clearNewBadge } = useAchievements(userId, messages.length);
+  const { achievements, newBadge, progress, clearNewBadge } = useAchievements(userId, messages.length);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
@@ -196,6 +196,7 @@ export default function App() {
       <AchievementBadges
         achievements={achievements}
         newBadge={newBadge}
+        progress={progress}
         onDismissToast={clearNewBadge}
       />
 
