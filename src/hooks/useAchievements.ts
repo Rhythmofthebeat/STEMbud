@@ -55,17 +55,38 @@ export function useAchievements(userId: string | null, messageCount: number) {
       });
   }, [userId]);
 
-  // Tick every minute once user has sent at least one message
+  // Tick every minute once user has sent at least one message. Paused whenever the tab
+  // isn't visible so leaving the app open in a background tab doesn't silently rack up
+  // "learning" minutes — without this, a long background stretch could push minutesUsed
+  // past a badge threshold unseen, and the next reload/refocus would look like the badge
+  // unlocked "automatically."
   useEffect(() => {
     if (messageCount === 0) return;
-    const interval = setInterval(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+    const tick = () => {
       setMinutesUsed((m) => {
         const next = m + 1;
         localStorage.setItem(MINUTES_KEY, String(next));
         return next;
       });
-    }, 60_000);
-    return () => clearInterval(interval);
+    };
+    const start = () => {
+      if (interval || document.hidden) return;
+      interval = setInterval(tick, 60_000);
+    };
+    const stop = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+    const handleVisibility = () => (document.hidden ? stop() : start());
+    document.addEventListener('visibilitychange', handleVisibility);
+    start();
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [messageCount]);
 
   const unlock = useCallback((id: string) => {
