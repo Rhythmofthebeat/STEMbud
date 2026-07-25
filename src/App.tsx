@@ -56,6 +56,7 @@ export default function App() {
     conversationId,
     loadConversation,
     startNewConversation,
+    renameConversation,
     anonQuota,
   } = useChat(userId, accessToken, () =>
     openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
@@ -109,6 +110,7 @@ export default function App() {
           activeId={conversationId}
           onSelect={loadConversation}
           onNewChat={startNewConversation}
+          onRename={renameConversation}
           onClose={() => setSidebarOpen(false)}
         />
       )}

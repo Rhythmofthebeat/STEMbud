@@ -612,20 +612,30 @@ body {
 
 .sidebar-item {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  align-items: flex-start;
-  text-align: left;
-  padding: 10px 12px;
+  align-items: center;
+  gap: 4px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   background: none;
-  cursor: pointer;
-  font-family: inherit;
   transition: background .15s;
 }
 .sidebar-item:hover { background: var(--surface-2); }
 .sidebar-item.active { background: var(--primary-light); border-color: var(--primary); }
+
+.sidebar-item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 10px 4px 10px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
 
 .sidebar-item-preview {
   font-size: 12.5px;
@@ -640,6 +650,37 @@ body {
 .sidebar-item-time {
   font-size: 10.5px;
   color: var(--text-faint);
+}
+
+.sidebar-item-rename {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-right: 6px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.sidebar-item-rename:hover { background: var(--surface); color: var(--primary); }
+
+.sidebar-rename-input {
+  flex: 1;
+  min-width: 0;
+  margin: 6px 8px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+  outline: none;
 }
 
 /* ── Notebook panel ── */

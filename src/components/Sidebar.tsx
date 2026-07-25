@@ -1,3 +1,4 @@
+import { useState, type KeyboardEvent } from 'react';
 import type { ConversationSummary } from '../types';
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
   activeId: string | null;
   onSelect: (id: string) => void;
   onNewChat: () => void;
+  onRename: (id: string, title: string) => void;
   onClose: () => void;
 }
 
@@ -20,7 +22,25 @@ function relativeTime(iso: string): string {
   return `${days}d ago`;
 }
 
-export default function Sidebar({ open, conversations, activeId, onSelect, onNewChat, onClose }: Props) {
+export default function Sidebar({ open, conversations, activeId, onSelect, onNewChat, onRename, onClose }: Props) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  const startRename = (c: ConversationSummary) => {
+    setEditingId(c.id);
+    setEditValue(c.preview);
+  };
+
+  const commitRename = () => {
+    if (editingId) onRename(editingId, editValue);
+    setEditingId(null);
+  };
+
+  const handleEditKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') commitRename();
+    if (e.key === 'Escape') setEditingId(null);
+  };
+
   return (
     <>
       {open && <div className="sidebar-backdrop" onClick={onClose} />}
@@ -42,14 +62,35 @@ export default function Sidebar({ open, conversations, activeId, onSelect, onNew
             <div className="sidebar-empty">No saved chats yet — start one below.</div>
           )}
           {conversations.map((c) => (
-            <button
-              key={c.id}
-              className={`sidebar-item ${c.id === activeId ? 'active' : ''}`}
-              onClick={() => { onSelect(c.id); onClose(); }}
-            >
-              <span className="sidebar-item-preview">{c.preview}</span>
-              <span className="sidebar-item-time">{relativeTime(c.updatedAt)}</span>
-            </button>
+            <div key={c.id} className={`sidebar-item ${c.id === activeId ? 'active' : ''}`}>
+              {editingId === c.id ? (
+                <input
+                  className="sidebar-rename-input"
+                  value={editValue}
+                  onChange={(e) => setEditValue(e.target.value)}
+                  onKeyDown={handleEditKey}
+                  onBlur={commitRename}
+                  autoFocus
+                />
+              ) : (
+                <>
+                  <button className="sidebar-item-main" onClick={() => { onSelect(c.id); onClose(); }}>
+                    <span className="sidebar-item-preview">{c.preview}</span>
+                    <span className="sidebar-item-time">{relativeTime(c.updatedAt)}</span>
+                  </button>
+                  <button
+                    className="sidebar-item-rename"
+                    onClick={(e) => { e.stopPropagation(); startRename(c); }}
+                    title="Rename"
+                    aria-label="Rename conversation"
+                  >
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+                      <path d="M13.5 3.5a1.5 1.5 0 0 1 2.12 2.12L7 14.25l-3 .75.75-3 8.75-8.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </>
+              )}
+            </div>
           ))}
         </div>
       </aside>

@@ -187,6 +187,31 @@ app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
   res.end();
 });
 
+// Generates a short conversation title from the first exchange
+app.post('/api/title', attachUser, anonUsageLimiter, async (req, res) => {
+  const { message, response } = req.body as { message: string; response: string };
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return res.status(503).json({ error: 'OPENAI_API_KEY not configured' });
+  if (!message) return res.status(400).json({ error: 'message is required' });
+
+  const openai = new OpenAI({ apiKey });
+
+  try {
+    const result = await openai.responses.create({
+      model: 'gpt-4o-mini',
+      instructions:
+        'Generate a short, specific title (3-6 words, no quotes, no trailing punctuation) summarizing what this STEM tutoring exchange is about.',
+      input: `Student: ${message}\n\nSTEMMY: ${(response ?? '').slice(0, 500)}`,
+    });
+    const title = (result.output_text ?? '').trim().slice(0, 80) || 'New conversation';
+    res.json({ title });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Title generation failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
 // File types the file_search tool can actually extract text from
 const SUPPORTED_UPLOAD_EXTENSIONS = ['.pdf', '.txt', '.docx', '.md'];
 

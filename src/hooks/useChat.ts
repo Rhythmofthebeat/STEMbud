@@ -27,6 +27,30 @@ function clearAnonChat() {
   localStorage.removeItem(ANON_CHAT_KEY);
 }
 
+async function generateTitle(
+  conversationId: string,
+  message: string,
+  response: string,
+  userId: string,
+  accessToken: string | null
+): Promise<void> {
+  try {
+    const res = await fetch('/api/title', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      },
+      body: JSON.stringify({ message, response }),
+    });
+    if (!res.ok) return;
+    const { title } = await res.json();
+    if (title) await supabase.from('conversations').update({ title }).eq('id', conversationId).eq('user_id', userId);
+  } catch {
+    // Non-critical — the sidebar just falls back to the first-message preview.
+  }
+}
+
 export function useChat(userId: string | null, accessToken: string | null, onRateLimited?: () => void) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +63,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
   const refreshConversations = useCallback(async (uid_: string) => {
     const { data: convRows } = await supabase
       .from('conversations')
-      .select('id, updated_at')
+      .select('id, title, updated_at')
       .eq('user_id', uid_)
       .order('updated_at', { ascending: false });
 
@@ -63,7 +87,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
       (convRows ?? []).map((c) => ({
         id: c.id,
         updatedAt: c.updated_at,
-        preview: previews[c.id] ?? 'New conversation',
+        preview: c.title ?? previews[c.id] ?? 'New conversation',
       }))
     );
   }, []);
@@ -102,6 +126,13 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     setMessages([]);
     if (!userId) clearAnonChat();
   }, [userId]);
+
+  const renameConversation = useCallback(async (id: string, title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return;
+    setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, preview: trimmed } : c)));
+    await supabase.from('conversations').update({ title: trimmed }).eq('id', id);
+  }, []);
 
   // On sign-in, load the conversation list + jump into the most recent one.
   // Anonymous users get their last session restored from this browser's localStorage.
@@ -181,6 +212,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
       if (!text.trim() || isLoading) return;
 
       let activeConvId: string | null = conversationId;
+      const isNewConversation = userId && !activeConvId;
       if (userId && !activeConvId) {
         const { data, error } = await supabase
           .from('conversations')
@@ -293,7 +325,11 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
                     .eq('id', activeConvId);
                 }
                 await persistMessage(activeConvId, { ...assistantMsg, content: accText, citations });
-                void refreshConversations(userId);
+                if (isNewConversation) {
+                  void generateTitle(activeConvId, text, accText, userId, accessToken).then(() => refreshConversations(userId));
+                } else {
+                  void refreshConversations(userId);
+                }
               }
             } else if (event.type === 'error') {
               setMessages((prev) =>
@@ -338,6 +374,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     conversationId,
     loadConversation,
     startNewConversation,
+    renameConversation,
     anonQuota,
   };
 }
