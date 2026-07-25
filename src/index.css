@@ -996,6 +996,23 @@ body {
 .toast-close { background: none; border: none; color: var(--text-faint); cursor: pointer; font-size: 18px; padding: 0; line-height: 1; }
 .toast-close:hover { color: var(--text-muted); }
 
+/* ── Anonymous usage quota ── */
+.anon-quota-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 7px 16px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.anon-quota-bar.low { background: var(--accent-light); color: var(--accent); }
+.anon-quota-bar .auth-inline-link { font-size: 11.5px; }
+
 /* ── Input area ── */
 .input-area {
   padding: 10px 14px 14px;

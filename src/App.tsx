@@ -53,6 +53,7 @@ export default function App() {
     conversationId,
     loadConversation,
     startNewConversation,
+    anonQuota,
   } = useChat(userId, accessToken, () =>
     openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
   );
@@ -197,6 +198,15 @@ export default function App() {
         newBadge={newBadge}
         onDismissToast={clearNewBadge}
       />
+
+      {!user && anonQuota && (
+        <div className={`anon-quota-bar ${anonQuota.remaining <= 5 ? 'low' : ''}`}>
+          <span>
+            {anonQuota.remaining} of {anonQuota.limit} free messages left this hour
+          </span>
+          <button className="auth-inline-link" onClick={() => openAuthModal()}>Sign in for unlimited</button>
+        </div>
+      )}
 
       <InputArea
         onSend={handleSend}

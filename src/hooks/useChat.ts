@@ -12,6 +12,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
   const [previousResponseId, setPreviousResponseId] = useState<string | undefined>();
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [anonQuota, setAnonQuota] = useState<{ remaining: number; limit: number } | null>(null);
 
   const refreshConversations = useCallback(async (uid_: string) => {
     const { data: convRows } = await supabase
@@ -90,6 +91,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
       setIsHistoryLoading(false);
       return;
     }
+    setAnonQuota(null);
 
     let cancelled = false;
     setIsHistoryLoading(true);
@@ -182,6 +184,14 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
             uploadedFileId,
           }),
         });
+
+        const remainingHeader = res.headers.get('RateLimit-Remaining');
+        const limitHeader = res.headers.get('RateLimit-Limit');
+        if (remainingHeader !== null && limitHeader !== null) {
+          setAnonQuota({ remaining: parseInt(remainingHeader, 10), limit: parseInt(limitHeader, 10) });
+        } else if (userId) {
+          setAnonQuota(null); // signed-in requests skip the limiter entirely — no cap to show
+        }
 
         if (res.status === 429) {
           onRateLimited?.();
@@ -288,5 +298,6 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     conversationId,
     loadConversation,
     startNewConversation,
+    anonQuota,
   };
 }
