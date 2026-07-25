@@ -1,6 +1,7 @@
 export interface Citation {
   filename: string;
   quote?: string;
+  fileId?: string;
 }
 
 export interface Message {

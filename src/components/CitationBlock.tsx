@@ -28,7 +28,18 @@ export default function CitationBlock({ citations }: Props) {
                 <path d="M6 2.5h5.5L15 6v11.5H6V2.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
                 <path d="M11.5 2.5V6H15" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
               </svg>
-              {c.filename}
+              {c.fileId ? (
+                <a
+                  className="citation-link"
+                  href={`/api/files/${c.fileId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {c.filename}
+                </a>
+              ) : (
+                c.filename
+              )}
             </div>
             {c.quote && <div className="citation-quote">"{c.quote}"</div>}
           </div>

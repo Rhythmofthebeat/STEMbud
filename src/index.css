@@ -1096,6 +1096,8 @@ body {
   color: var(--text-muted);
 }
 .citation-file { font-weight: 600; color: var(--primary); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
+.citation-link { color: inherit; text-decoration: none; }
+.citation-link:hover { text-decoration: underline; }
 .citation-quote { font-style: italic; padding-left: 8px; border-left: 2px solid var(--primary); margin-top: 4px; font-size: 11.5px; }
 
 /* ── Typing indicator ── */

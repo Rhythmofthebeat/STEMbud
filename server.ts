@@ -154,7 +154,7 @@ app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
     const stream = await openai.responses.create(createParams);
 
     let responseId = '';
-    const citations: { filename: string; quote?: string }[] = [];
+    const citations: { filename: string; quote?: string; fileId?: string }[] = [];
     const seenFiles = new Set<string>();
 
     for await (const event of stream) {
@@ -170,7 +170,11 @@ app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
             for (const ann of content.annotations ?? []) {
               if (ann.type === 'file_citation' && !seenFiles.has(ann.filename)) {
                 seenFiles.add(ann.filename);
-                citations.push({ filename: ann.filename, quote: (ann as any).quote });
+                citations.push({
+                  filename: ann.filename,
+                  quote: (ann as any).quote,
+                  fileId: (ann as any).file_id,
+                });
               }
             }
           }
@@ -240,6 +244,29 @@ app.post('/api/upload', attachUser, anonUsageLimiter, upload.single('file'), asy
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Upload failed';
     res.status(500).json({ error: msg });
+  }
+});
+
+// Streams a vector-store source file back so citations can link directly to it
+app.get('/api/files/:fileId', anonUsageLimiter, async (req, res) => {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return res.status(503).json({ error: 'OPENAI_API_KEY not configured' });
+
+  const openai = new OpenAI({ apiKey });
+  const { fileId } = req.params;
+
+  try {
+    const [meta, content] = await Promise.all([
+      openai.files.retrieve(fileId),
+      openai.files.content(fileId),
+    ]);
+    const buffer = Buffer.from(await content.arrayBuffer());
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `inline; filename="${meta.filename ?? fileId}"`);
+    res.send(buffer);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'File not found';
+    res.status(404).json({ error: msg });
   }
 });
 
