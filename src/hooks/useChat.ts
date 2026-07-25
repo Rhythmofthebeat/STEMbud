@@ -137,6 +137,11 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
       if (mostRecent) {
         await loadConversation(mostRecent.id);
       } else {
+        // No saved conversation for this account — clear out anything left over
+        // from an anonymous session rather than carrying it into the signed-in view.
+        setMessages([]);
+        setConversationId(null);
+        setPreviousResponseId(undefined);
         setIsHistoryLoading(false);
       }
     })();
@@ -155,8 +160,10 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
   const persistMessage = useCallback(
     async (convId: string, msg: Message) => {
       if (!userId) return;
-      await supabase.from('messages').insert({
-        id: msg.id,
+      // Note: `msg.id` is a client-generated string (e.g. "msg-1-...") used only for local
+      // React state reconciliation — it's never sent here, since the messages table's `id`
+      // is a uuid with its own default. History reloads use the DB's own ids instead.
+      const { error } = await supabase.from('messages').insert({
         conversation_id: convId,
         user_id: userId,
         role: msg.role,
@@ -164,6 +171,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
         citations: msg.citations ?? null,
         uploaded_file_name: msg.uploadedFile?.name ?? null,
       });
+      if (error) console.error('Failed to save message:', error.message);
     },
     [userId]
   );
