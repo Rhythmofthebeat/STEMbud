@@ -261,7 +261,12 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
   );
 
   const sendMessage = useCallback(
-    async (text: string, uploadedFileId?: string, uploadedFileName?: string) => {
+    async (
+      text: string,
+      uploadedFileId?: string,
+      uploadedFileName?: string,
+      uploadedFileKind?: 'document' | 'image'
+    ) => {
       if (!text.trim() || isLoading) return;
 
       let activeConvId: string | null = conversationId;
@@ -307,6 +312,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
             message: text,
             previousResponseId,
             uploadedFileId,
+            uploadedFileKind,
           }),
         });
 

@@ -86,7 +86,7 @@ export default function App() {
   }, [user]);
 
   const handleSend = (text: string) => {
-    sendMessage(text, uploadedFile?.fileId, uploadedFile?.filename);
+    sendMessage(text, uploadedFile?.fileId, uploadedFile?.filename, uploadedFile?.kind);
     setUploadedFile(null);
   };
 

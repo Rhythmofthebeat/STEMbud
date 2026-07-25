@@ -27,6 +27,7 @@ export interface Achievement {
 export interface UploadedFile {
   fileId: string;
   filename: string;
+  kind: 'document' | 'image';
 }
 
 export interface ConversationSummary {

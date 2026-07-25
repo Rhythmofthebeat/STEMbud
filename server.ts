@@ -85,10 +85,11 @@ app.get('/api/config', (_req, res) => {
 
 // Chat streaming endpoint (SSE)
 app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
-  const { message, previousResponseId, uploadedFileId } = req.body as {
+  const { message, previousResponseId, uploadedFileId, uploadedFileKind } = req.body as {
     message: string;
     previousResponseId?: string;
     uploadedFileId?: string;
+    uploadedFileKind?: 'document' | 'image';
   };
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -125,17 +126,19 @@ app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
       } as OpenAI.Responses.Tool);
     }
 
-    // Build input — array form with an input_file content part lets the model read
-    // an ad-hoc attachment directly, separate from the persistent vector-store corpus.
+    // Build input — array form with an input_file/input_image content part lets the model
+    // read an ad-hoc attachment (or a scanned worksheet photo) directly, separate from the
+    // persistent vector-store corpus.
     let input: string | OpenAI.Responses.MessageParam[];
     if (uploadedFileId) {
+      const filePart =
+        uploadedFileKind === 'image'
+          ? { type: 'input_image', file_id: uploadedFileId }
+          : { type: 'input_file', file_id: uploadedFileId };
       input = [
         {
           role: 'user',
-          content: [
-            { type: 'input_text', text: message },
-            { type: 'input_file', file_id: uploadedFileId },
-          ],
+          content: [{ type: 'input_text', text: message }, filePart],
         } as unknown as OpenAI.Responses.MessageParam,
       ];
     } else {
@@ -218,15 +221,19 @@ app.post('/api/title', attachUser, anonUsageLimiter, async (req, res) => {
 
 // File types the file_search tool can actually extract text from
 const SUPPORTED_UPLOAD_EXTENSIONS = ['.pdf', '.txt', '.docx', '.md'];
+// Scanned/photographed worksheets — read directly as an image, not through file_search
+const SUPPORTED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
-// File upload endpoint
+// File upload endpoint (documents and scanned worksheet photos)
 app.post('/api/upload', attachUser, anonUsageLimiter, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file provided' });
 
   const ext = path.extname(req.file.originalname).toLowerCase();
-  if (!SUPPORTED_UPLOAD_EXTENSIONS.includes(ext)) {
+  const isImage = SUPPORTED_IMAGE_EXTENSIONS.includes(ext);
+  if (!isImage && !SUPPORTED_UPLOAD_EXTENSIONS.includes(ext)) {
+    const all = [...SUPPORTED_UPLOAD_EXTENSIONS, ...SUPPORTED_IMAGE_EXTENSIONS];
     return res.status(400).json({
-      error: `Unsupported file type "${ext}". Please upload one of: ${SUPPORTED_UPLOAD_EXTENSIONS.join(', ')}.`,
+      error: `Unsupported file type "${ext}". Please upload one of: ${all.join(', ')}.`,
     });
   }
 
@@ -238,11 +245,32 @@ app.post('/api/upload', attachUser, anonUsageLimiter, upload.single('file'), asy
   try {
     const file = await openai.files.create({
       file: new File([req.file.buffer], req.file.originalname, { type: req.file.mimetype }),
-      purpose: 'user_data',
+      purpose: isImage ? 'vision' : 'user_data',
     });
-    res.json({ fileId: file.id, filename: req.file.originalname });
+    res.json({ fileId: file.id, filename: req.file.originalname, kind: isImage ? 'image' : 'document' });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Upload failed';
+    res.status(500).json({ error: msg });
+  }
+});
+
+// Voice input: transcribes a recorded audio clip (any language — auto-detected by the model)
+app.post('/api/transcribe', attachUser, anonUsageLimiter, upload.single('audio'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No audio provided' });
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return res.status(503).json({ error: 'OPENAI_API_KEY not configured' });
+
+  const openai = new OpenAI({ apiKey });
+
+  try {
+    const result = await openai.audio.transcriptions.create({
+      file: new File([req.file.buffer], 'recording.webm', { type: req.file.mimetype || 'audio/webm' }),
+      model: 'whisper-1',
+    });
+    res.json({ text: result.text });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Transcription failed';
     res.status(500).json({ error: msg });
   }
 });

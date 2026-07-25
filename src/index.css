@@ -1389,9 +1389,62 @@ body {
 }
 .attach-btn:hover:not(:disabled) { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
 .attach-btn:disabled { opacity: .4; cursor: not-allowed; }
+.attach-btn.mic-recording { background: #d64545; color: #fff; border-color: #d64545; animation: mic-pulse 1.4s ease-in-out infinite; }
 
 .spin { animation: spin .8s linear infinite; }
 @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+@keyframes mic-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(214,69,69,.45); } 50% { box-shadow: 0 0 0 6px rgba(214,69,69,0); } }
+
+.camera-modal-backdrop {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,.6);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.camera-modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  width: 100%; max-width: 420px;
+  display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+.camera-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; color: var(--text);
+}
+.camera-close {
+  background: none; border: none; font-size: 20px; line-height: 1; cursor: pointer;
+  color: var(--text-muted); padding: 2px 6px;
+}
+.camera-close:hover { color: var(--text); }
+.camera-viewport {
+  position: relative; width: 100%; aspect-ratio: 3 / 4;
+  background: #000; border-radius: var(--radius-sm); overflow: hidden;
+}
+.camera-viewport video {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.camera-guide-box {
+  position: absolute; top: 50%; left: 50%;
+  width: 72%;
+  aspect-ratio: 8.5 / 11;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(255,255,255,.85);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.camera-error {
+  padding: 30px 10px; text-align: center; color: var(--text-muted); font-size: 13.5px;
+}
+.camera-hint { font-size: 12.5px; color: var(--text-muted); text-align: center; margin: 0; }
+.camera-capture-btn {
+  background: var(--primary); color: #fff; border: none;
+  border-radius: var(--radius-sm); padding: 10px; font-weight: 600; font-size: 14px;
+  cursor: pointer; transition: opacity .15s;
+}
+.camera-capture-btn:hover:not(:disabled) { opacity: .9; }
+.camera-capture-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .send-btn {
   width: 34px; height: 34px;
