@@ -11,23 +11,32 @@ const BADGE_DEFS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = [
   { id: 'master',        emoji: '💎', name: 'STEM Master',    description: '2 hours of mastery!',         minutesRequired: 120 },
 ];
 
-const STORAGE_KEY = 'stembud_minutes';
+const MINUTES_KEY = 'stembud_minutes';
+const LOCAL_UNLOCKED_KEY = 'stembud_unlocked';
 
 function loadMinutes(): number {
-  return parseInt(localStorage.getItem(STORAGE_KEY) ?? '0', 10) || 0;
+  return parseInt(localStorage.getItem(MINUTES_KEY) ?? '0', 10) || 0;
+}
+
+function loadLocalUnlocked(): Set<string> {
+  try {
+    const raw = localStorage.getItem(LOCAL_UNLOCKED_KEY);
+    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+  } catch { return new Set(); }
 }
 
 export function useAchievements(userId: string | null, messageCount: number) {
   const [minutesUsed, setMinutesUsed] = useState(loadMinutes);
-  const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
+  const [unlocked, setUnlocked] = useState<Set<string>>(userId ? new Set() : loadLocalUnlocked);
   const [newBadge, setNewBadge] = useState<Achievement | null>(null);
   const unlockedRef = useRef(unlocked);
   unlockedRef.current = unlocked;
 
-  // Load this user's unlocked badges from Supabase
+  // Signed in: load this user's unlocked badges from Supabase.
+  // Anonymous: fall back to whatever's saved in this browser.
   useEffect(() => {
     if (!userId) {
-      setUnlocked(new Set());
+      setUnlocked(loadLocalUnlocked());
       return;
     }
     supabase
@@ -45,7 +54,7 @@ export function useAchievements(userId: string | null, messageCount: number) {
     const interval = setInterval(() => {
       setMinutesUsed((m) => {
         const next = m + 1;
-        localStorage.setItem(STORAGE_KEY, String(next));
+        localStorage.setItem(MINUTES_KEY, String(next));
         return next;
       });
     }, 60_000);
@@ -53,19 +62,23 @@ export function useAchievements(userId: string | null, messageCount: number) {
   }, [messageCount]);
 
   const unlock = useCallback((id: string) => {
-    if (!userId || unlockedRef.current.has(id)) return;
+    if (unlockedRef.current.has(id)) return;
     setUnlocked((prev) => new Set(prev).add(id));
     const def = BADGE_DEFS.find((d) => d.id === id);
-    if (def) {
-      setNewBadge({ ...def, unlocked: true, unlockedAt: Date.now() });
+    if (!def) return;
+    setNewBadge({ ...def, unlocked: true, unlockedAt: Date.now() });
+    if (userId) {
       void supabase.from('achievements').insert({ user_id: userId, badge_id: id });
+    } else {
+      const next = new Set(unlockedRef.current).add(id);
+      localStorage.setItem(LOCAL_UNLOCKED_KEY, JSON.stringify([...next]));
     }
   }, [userId]);
 
   // Unlock newcomer badge on first message
   useEffect(() => {
-    if (messageCount > 0 && userId) unlock('newcomer');
-  }, [messageCount, userId]); // eslint-disable-line
+    if (messageCount > 0) unlock('newcomer');
+  }, [messageCount]); // eslint-disable-line
 
   // Check time-based badges
   useEffect(() => {

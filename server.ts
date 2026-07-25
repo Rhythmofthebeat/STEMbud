@@ -3,6 +3,7 @@ import express from 'express';
 import multer from 'multer';
 import OpenAI from 'openai';
 import { createClient } from '@supabase/supabase-js';
+import rateLimit from 'express-rate-limit';
 import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,6 +15,7 @@ const __dirname = path.dirname(__filename);
 import config from './config.json' with { type: 'json' };
 
 const app = express();
+app.set('trust proxy', 1); // needed for accurate req.ip behind Vercel/Replit's proxy
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
@@ -25,20 +27,29 @@ const supabaseAuth = createClient(
   'sb_publishable_pNwEPf2ZbnECRkBFFKuZJw_MtvgNKaT'
 );
 
-async function requireUser(req: express.Request, res: express.Response): Promise<boolean> {
+// Identifies the caller if they sent a valid Supabase session token, but never blocks the request —
+// the app is usable anonymously; signed-in users just get unlimited access + saved history.
+async function attachUser(req: express.Request, _res: express.Response, next: express.NextFunction) {
   const authHeader = req.headers.authorization ?? '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-  if (!token) {
-    res.status(401).json({ error: 'Sign in required.' });
-    return false;
+  if (token) {
+    const { data } = await supabaseAuth.auth.getUser(token);
+    (req as any).user = data?.user ?? null;
+  } else {
+    (req as any).user = null;
   }
-  const { data, error } = await supabaseAuth.auth.getUser(token);
-  if (error || !data.user) {
-    res.status(401).json({ error: 'Your session has expired. Please sign in again.' });
-    return false;
-  }
-  return true;
+  next();
 }
+
+// Anonymous callers are capped; signed-in users are exempt entirely.
+const anonUsageLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => !!(req as any).user,
+  message: { error: 'rate_limited', message: "You've hit the limit for anonymous use. Sign in for unlimited access." },
+});
 
 app.use(express.json());
 
@@ -73,9 +84,7 @@ app.get('/api/config', (_req, res) => {
 });
 
 // Chat streaming endpoint (SSE)
-app.post('/api/chat', async (req, res) => {
-  if (!(await requireUser(req, res))) return;
-
+app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
   const { message, previousResponseId, uploadedFileId } = req.body as {
     message: string;
     previousResponseId?: string;
@@ -180,8 +189,7 @@ app.post('/api/chat', async (req, res) => {
 const SUPPORTED_UPLOAD_EXTENSIONS = ['.pdf', '.txt', '.docx', '.md'];
 
 // File upload endpoint
-app.post('/api/upload', upload.single('file'), async (req, res) => {
-  if (!(await requireUser(req, res))) return;
+app.post('/api/upload', attachUser, anonUsageLimiter, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file provided' });
 
   const ext = path.extname(req.file.originalname).toLowerCase();

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
 import { useAchievements } from './hooks/useAchievements';
 import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import AuthScreen from './components/AuthScreen';
 import ResetPasswordScreen from './components/ResetPasswordScreen';
 import ChatInterface from './components/ChatInterface';
@@ -33,7 +34,28 @@ export default function App() {
   const userId = user?.id ?? null;
   const accessToken = session?.access_token ?? null;
 
-  const { messages, sendMessage, generateQuiz, isLoading, isHistoryLoading } = useChat(userId, accessToken);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMessage, setAuthModalMessage] = useState<string | undefined>();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const openAuthModal = useCallback((message?: string) => {
+    setAuthModalMessage(message);
+    setAuthModalOpen(true);
+  }, []);
+
+  const {
+    messages,
+    sendMessage,
+    generateQuiz,
+    isLoading,
+    isHistoryLoading,
+    conversations,
+    conversationId,
+    loadConversation,
+    startNewConversation,
+  } = useChat(userId, accessToken, () =>
+    openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
+  );
   const { achievements, newBadge, clearNewBadge } = useAchievements(userId, messages.length);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
@@ -44,6 +66,11 @@ export default function App() {
       .then(setAppConfig)
       .catch(() => null);
   }, []);
+
+  // Close the "sign in for unlimited access" prompt automatically once signed in
+  useEffect(() => {
+    if (user) setAuthModalOpen(false);
+  }, [user]);
 
   const handleSend = (text: string) => {
     sendMessage(text, uploadedFile?.fileId, uploadedFile?.filename);
@@ -62,27 +89,45 @@ export default function App() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="app" data-theme={theme}>
-        <AuthScreen onSignIn={signIn} onSignUp={signUp} onRequestPasswordReset={requestPasswordReset} />
-      </div>
-    );
-  }
-
   const hasMessages = messages.length > 0;
   const userTurns = messages.filter((m) => m.role === 'user').length;
   const quizDisabled = isLoading || userTurns < 2;
 
   return (
     <div className="app" data-theme={theme}>
+      {user && (
+        <Sidebar
+          open={sidebarOpen}
+          conversations={conversations}
+          activeId={conversationId}
+          onSelect={loadConversation}
+          onNewChat={startNewConversation}
+          onClose={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {authModalOpen && (
+        <div className="auth-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setAuthModalOpen(false)}>
+          <AuthScreen
+            onSignIn={signIn}
+            onSignUp={signUp}
+            onRequestPasswordReset={requestPasswordReset}
+            onClose={() => setAuthModalOpen(false)}
+            initialMessage={authModalMessage}
+          />
+        </div>
+      )}
+
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
         hasMessages={hasMessages}
         quizDisabled={quizDisabled}
         onGenerateQuiz={generateQuiz}
+        signedIn={!!user}
         onSignOut={signOut}
+        onSignInClick={() => openAuthModal()}
+        onToggleSidebar={() => setSidebarOpen((o) => !o)}
       />
 
       {appConfig && !appConfig.vector_store_configured && (
@@ -135,6 +180,11 @@ export default function App() {
                 An MIS initiative, built to close the opportunity gap in STEM education.
               </span>
             </div>
+            {!user && (
+              <p className="welcome-anon-hint">
+                Chat freely below — <button className="auth-inline-link" onClick={() => openAuthModal()}>sign in</button> to save your history across devices.
+              </p>
+            )}
             <div className="welcome-divider" />
             <p className="welcome-hint">Try a question below or type your own ↓</p>
             <StarterQuestions onSelect={handleSend} />

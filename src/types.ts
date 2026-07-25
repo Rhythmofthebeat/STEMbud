@@ -27,3 +27,9 @@ export interface UploadedFile {
   fileId: string;
   filename: string;
 }
+
+export interface ConversationSummary {
+  id: string;
+  updatedAt: string;
+  preview: string;
+}

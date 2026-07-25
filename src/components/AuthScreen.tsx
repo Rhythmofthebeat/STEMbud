@@ -4,17 +4,19 @@ interface Props {
   onSignIn: (email: string, password: string) => Promise<void>;
   onSignUp: (email: string, password: string, displayName: string) => Promise<void>;
   onRequestPasswordReset: (email: string) => Promise<void>;
+  onClose?: () => void;
+  initialMessage?: string;
 }
 
 type Mode = 'signin' | 'signup' | 'reset';
 
-export default function AuthScreen({ onSignIn, onSignUp, onRequestPasswordReset }: Props) {
+export default function AuthScreen({ onSignIn, onSignUp, onRequestPasswordReset, onClose, initialMessage }: Props) {
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
-  const [info, setInfo] = useState('');
+  const [info, setInfo] = useState(initialMessage ?? '');
   const [submitting, setSubmitting] = useState(false);
 
   const switchMode = (next: Mode) => {
@@ -58,6 +60,9 @@ export default function AuthScreen({ onSignIn, onSignUp, onRequestPasswordReset 
       <div className="welcome-orb welcome-orb-1" />
       <div className="welcome-orb welcome-orb-2" />
       <div className="welcome-card">
+        {onClose && (
+          <button className="auth-modal-close" onClick={onClose} aria-label="Close">×</button>
+        )}
         <div className="welcome-avatar">
           <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
             <circle cx="18" cy="18" r="4" fill="white"/>

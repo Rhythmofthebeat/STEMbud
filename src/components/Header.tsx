@@ -4,12 +4,39 @@ interface Props {
   hasMessages: boolean;
   quizDisabled: boolean;
   onGenerateQuiz: () => void;
+  signedIn: boolean;
   onSignOut: () => void;
+  onSignInClick: () => void;
+  onToggleSidebar: () => void;
 }
 
-export default function Header({ theme, onToggleTheme, hasMessages, quizDisabled, onGenerateQuiz, onSignOut }: Props) {
+export default function Header({
+  theme,
+  onToggleTheme,
+  hasMessages,
+  quizDisabled,
+  onGenerateQuiz,
+  signedIn,
+  onSignOut,
+  onSignInClick,
+  onToggleSidebar,
+}: Props) {
   return (
     <header className="header">
+      {signedIn && (
+        <button
+          className="sidebar-toggle-btn"
+          onClick={onToggleSidebar}
+          title="Your chats"
+          aria-label="Toggle chat history sidebar"
+        >
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+            <rect x="3" y="4" width="14" height="12" rx="2" stroke="currentColor" strokeWidth="1.4"/>
+            <path d="M8 4v12" stroke="currentColor" strokeWidth="1.4"/>
+          </svg>
+        </button>
+      )}
+
       <div className="header-brand">
         <div className="header-logo">
           <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
@@ -64,17 +91,23 @@ export default function Header({ theme, onToggleTheme, hasMessages, quizDisabled
         )}
       </button>
 
-      <button
-        className="header-signout-btn"
-        onClick={onSignOut}
-        title="Sign out"
-        aria-label="Sign out"
-      >
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-          <path d="M8 17H5a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 5 3h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M13 13.5 17 10l-4-3.5M17 10H8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+      {signedIn ? (
+        <button
+          className="header-signout-btn"
+          onClick={onSignOut}
+          title="Sign out"
+          aria-label="Sign out"
+        >
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+            <path d="M8 17H5a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 5 3h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M13 13.5 17 10l-4-3.5M17 10H8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
+      ) : (
+        <button className="header-signin-btn" onClick={onSignInClick}>
+          Sign in
+        </button>
+      )}
     </header>
   );
 }

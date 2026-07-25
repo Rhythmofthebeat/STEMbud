@@ -1,21 +1,90 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { Message, Citation } from '../types';
+import type { Message, Citation, ConversationSummary } from '../types';
 import { supabase } from '../lib/supabase';
 
 let msgCounter = 0;
 const uid = () => `msg-${++msgCounter}-${Date.now()}`;
 
-export function useChat(userId: string | null, accessToken: string | null) {
+export function useChat(userId: string | null, accessToken: string | null, onRateLimited?: () => void) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
   const [previousResponseId, setPreviousResponseId] = useState<string | undefined>();
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
 
-  // Load the user's most recent conversation on login
+  const refreshConversations = useCallback(async (uid_: string) => {
+    const { data: convRows } = await supabase
+      .from('conversations')
+      .select('id, updated_at')
+      .eq('user_id', uid_)
+      .order('updated_at', { ascending: false });
+
+    const ids = (convRows ?? []).map((c) => c.id);
+    const previews: Record<string, string> = {};
+
+    if (ids.length) {
+      const { data: firstMsgs } = await supabase
+        .from('messages')
+        .select('conversation_id, content, created_at')
+        .in('conversation_id', ids)
+        .eq('role', 'user')
+        .order('created_at', { ascending: true });
+
+      for (const m of firstMsgs ?? []) {
+        if (!previews[m.conversation_id]) previews[m.conversation_id] = m.content;
+      }
+    }
+
+    setConversations(
+      (convRows ?? []).map((c) => ({
+        id: c.id,
+        updatedAt: c.updated_at,
+        preview: previews[c.id] ?? 'New conversation',
+      }))
+    );
+  }, []);
+
+  const loadConversation = useCallback(async (id: string) => {
+    setIsHistoryLoading(true);
+    const { data: conversation } = await supabase
+      .from('conversations')
+      .select('id, previous_response_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    const { data: rows } = await supabase
+      .from('messages')
+      .select('id, role, content, citations, uploaded_file_name')
+      .eq('conversation_id', id)
+      .order('created_at', { ascending: true });
+
+    setConversationId(id);
+    setPreviousResponseId(conversation?.previous_response_id ?? undefined);
+    setMessages(
+      (rows ?? []).map((r) => ({
+        id: r.id,
+        role: r.role as 'user' | 'assistant',
+        content: r.content,
+        citations: (r.citations as Citation[] | null) ?? undefined,
+        uploadedFile: r.uploaded_file_name ? { name: r.uploaded_file_name } : undefined,
+      }))
+    );
+    setIsHistoryLoading(false);
+  }, []);
+
+  const startNewConversation = useCallback(() => {
+    setConversationId(null);
+    setPreviousResponseId(undefined);
+    setMessages([]);
+  }, []);
+
+  // On sign-in, load the conversation list + jump into the most recent one.
+  // Anonymous users get a blank, unsaved session.
   useEffect(() => {
     if (!userId) {
       setMessages([]);
+      setConversations([]);
       setConversationId(null);
       setPreviousResponseId(undefined);
       setIsHistoryLoading(false);
@@ -26,9 +95,12 @@ export function useChat(userId: string | null, accessToken: string | null) {
     setIsHistoryLoading(true);
 
     (async () => {
-      const { data: conversation } = await supabase
+      await refreshConversations(userId);
+      if (cancelled) return;
+
+      const { data: mostRecent } = await supabase
         .from('conversations')
-        .select('id, previous_response_id')
+        .select('id')
         .eq('user_id', userId)
         .order('updated_at', { ascending: false })
         .limit(1)
@@ -36,35 +108,15 @@ export function useChat(userId: string | null, accessToken: string | null) {
 
       if (cancelled) return;
 
-      if (!conversation) {
+      if (mostRecent) {
+        await loadConversation(mostRecent.id);
+      } else {
         setIsHistoryLoading(false);
-        return;
       }
-
-      const { data: rows } = await supabase
-        .from('messages')
-        .select('id, role, content, citations, uploaded_file_name')
-        .eq('conversation_id', conversation.id)
-        .order('created_at', { ascending: true });
-
-      if (cancelled) return;
-
-      setConversationId(conversation.id);
-      setPreviousResponseId(conversation.previous_response_id ?? undefined);
-      setMessages(
-        (rows ?? []).map((r) => ({
-          id: r.id,
-          role: r.role as 'user' | 'assistant',
-          content: r.content,
-          citations: (r.citations as Citation[] | null) ?? undefined,
-          uploadedFile: r.uploaded_file_name ? { name: r.uploaded_file_name } : undefined,
-        }))
-      );
-      setIsHistoryLoading(false);
     })();
 
     return () => { cancelled = true; };
-  }, [userId]);
+  }, [userId, refreshConversations, loadConversation]);
 
   const persistMessage = useCallback(
     async (convId: string, msg: Message) => {
@@ -84,21 +136,20 @@ export function useChat(userId: string | null, accessToken: string | null) {
 
   const sendMessage = useCallback(
     async (text: string, uploadedFileId?: string, uploadedFileName?: string) => {
-      if (!text.trim() || isLoading || !userId) return;
+      if (!text.trim() || isLoading) return;
 
-      let convId = conversationId;
-      if (!convId) {
+      let activeConvId: string | null = conversationId;
+      if (userId && !activeConvId) {
         const { data, error } = await supabase
           .from('conversations')
           .insert({ user_id: userId })
           .select('id')
           .single();
-        if (error || !data) return;
-        convId = data.id;
-        setConversationId(convId);
+        if (!error && data) {
+          activeConvId = data.id;
+          setConversationId(activeConvId);
+        }
       }
-      if (!convId) return;
-      const activeConvId: string = convId;
 
       const userMsg: Message = {
         id: uid(),
@@ -116,7 +167,7 @@ export function useChat(userId: string | null, accessToken: string | null) {
 
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setIsLoading(true);
-      void persistMessage(activeConvId, userMsg);
+      if (userId && activeConvId) void persistMessage(activeConvId, userMsg);
 
       try {
         const res = await fetch('/api/chat', {
@@ -132,8 +183,17 @@ export function useChat(userId: string | null, accessToken: string | null) {
           }),
         });
 
+        if (res.status === 429) {
+          onRateLimited?.();
+        }
+
         if (!res.ok || !res.body) {
-          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+          let errMsg = `HTTP ${res.status}`;
+          try {
+            const body = await res.json();
+            errMsg = body.message ?? body.error ?? errMsg;
+          } catch { /* ignore */ }
+          throw new Error(errMsg);
         }
 
         const reader = res.body.getReader();
@@ -174,14 +234,17 @@ export function useChat(userId: string | null, accessToken: string | null) {
                     : m
                 )
               );
-              if (event.responseId) {
-                setPreviousResponseId(event.responseId);
-                await supabase
-                  .from('conversations')
-                  .update({ previous_response_id: event.responseId, updated_at: new Date().toISOString() })
-                  .eq('id', activeConvId);
+              if (event.responseId) setPreviousResponseId(event.responseId);
+              if (userId && activeConvId) {
+                if (event.responseId) {
+                  await supabase
+                    .from('conversations')
+                    .update({ previous_response_id: event.responseId, updated_at: new Date().toISOString() })
+                    .eq('id', activeConvId);
+                }
+                await persistMessage(activeConvId, { ...assistantMsg, content: accText, citations });
+                void refreshConversations(userId);
               }
-              await persistMessage(activeConvId, { ...assistantMsg, content: accText, citations });
             } else if (event.type === 'error') {
               setMessages((prev) =>
                 prev.map((m) =>
@@ -206,7 +269,7 @@ export function useChat(userId: string | null, accessToken: string | null) {
         setIsLoading(false);
       }
     },
-    [isLoading, previousResponseId, userId, conversationId, accessToken, persistMessage]
+    [isLoading, previousResponseId, userId, conversationId, accessToken, persistMessage, refreshConversations, onRateLimited]
   );
 
   const generateQuiz = useCallback(() => {
@@ -215,5 +278,15 @@ export function useChat(userId: string | null, accessToken: string | null) {
     );
   }, [sendMessage]);
 
-  return { messages, sendMessage, generateQuiz, isLoading, isHistoryLoading };
+  return {
+    messages,
+    sendMessage,
+    generateQuiz,
+    isLoading,
+    isHistoryLoading,
+    conversations,
+    conversationId,
+    loadConversation,
+    startNewConversation,
+  };
 }
