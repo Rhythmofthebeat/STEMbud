@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <rect width="500" height="500" fill="#F5F1E4"/>
+
+  <!-- circular text paths -->
+  <path id="arcTop" d="M 70,270 A 180,180 0 0 1 430,270" fill="none"/>
+  <path id="arcBottom" d="M 130,410 A 130,130 0 0 0 370,410" fill="none"/>
+
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#4A3B2C" letter-spacing="6">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">MINORITIES IN</textPath>
+  </text>
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#4A3B2C" letter-spacing="10">
+    <textPath href="#arcBottom" startOffset="50%" text-anchor="middle">STEM</textPath>
+  </text>
+
+  <!-- tick marks bracketing the text -->
+  <line x1="70" y1="270" x2="70" y2="330" stroke="#8A7256" stroke-width="2"/>
+  <line x1="430" y1="270" x2="430" y2="330" stroke="#8A7256" stroke-width="2"/>
+
+  <!-- hand -->
+  <g>
+    <path d="M 175,230 C 165,180 175,150 195,150 C 210,150 215,165 213,185
+             L 213,260 L 205,330 C 245,340 275,335 300,320
+             C 320,300 300,250 260,240
+             L 255,220
+             C 253,210 240,205 235,215
+             L 230,235
+             C 205,225 190,225 175,230 Z"
+          fill="#C99C82" stroke="#B07E5E" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+
+  <!-- test tube 1 (upright) -->
+  <g>
+    <rect x="222" y="175" width="26" height="120" rx="13" fill="#FFFDF8" stroke="#B07E5E" stroke-width="3"/>
+    <path d="M 222,240 a 13,13 0 0 0 26,0 v 42 a 13,13 0 0 1 -26,0 Z" fill="url(#tubeGreen1)"/>
+    <line x1="222" y1="200" x2="248" y2="200" stroke="#B07E5E" stroke-width="2"/>
+    <line x1="222" y1="215" x2="248" y2="215" stroke="#B07E5E" stroke-width="1.5"/>
+    <line x1="222" y1="230" x2="248" y2="230" stroke="#B07E5E" stroke-width="1.5"/>
+  </g>
+
+  <!-- test tube 2 (tilted) -->
+  <g transform="rotate(28 270 270)">
+    <rect x="257" y="175" width="26" height="120" rx="13" fill="#FFFDF8" stroke="#B07E5E" stroke-width="3"/>
+    <path d="M 257,235 a 13,13 0 0 0 26,0 v 47 a 13,13 0 0 1 -26,0 Z" fill="url(#tubeGreen2)"/>
+    <line x1="257" y1="200" x2="283" y2="200" stroke="#B07E5E" stroke-width="2"/>
+    <line x1="257" y1="215" x2="283" y2="215" stroke="#B07E5E" stroke-width="1.5"/>
+  </g>
+
+  <defs>
+    <linearGradient id="tubeGreen1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9AC17A"/>
+      <stop offset="100%" stop-color="#4F7942"/>
+    </linearGradient>
+    <linearGradient id="tubeGreen2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8FB86B"/>
+      <stop offset="100%" stop-color="#3F6B38"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -86,7 +86,7 @@ export default function App() {
             <div className="welcome-partner">
               <img
                 className="welcome-partner-logo"
-                src="/minorities-in-stem-logo.png"
+                src="/minorities-in-stem-logo.svg"
                 alt="Minorities in STEM logo"
                 onError={(e) => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none'; }}
               />
