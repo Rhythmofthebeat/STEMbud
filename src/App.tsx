@@ -3,6 +3,7 @@ import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
 import { useAchievements } from './hooks/useAchievements';
+import { useStreak } from './hooks/useStreak';
 import { useNotes } from './hooks/useNotes';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -60,6 +61,7 @@ export default function App() {
     openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
   );
   const { achievements, newBadge, progress, clearNewBadge } = useAchievements(userId, messages.length);
+  const streak = useStreak(userId, messages.length);
   const { notes, createNote, updateNote, deleteNote } = useNotes(userId);
   const [notebookOpen, setNotebookOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
@@ -211,6 +213,7 @@ export default function App() {
         achievements={achievements}
         newBadge={newBadge}
         progress={progress}
+        streak={streak}
         onDismissToast={clearNewBadge}
       />
 

@@ -8,14 +8,20 @@ interface Progress {
   percent: number;
 }
 
+interface Streak {
+  currentStreak: number;
+  longestStreak: number;
+}
+
 interface Props {
   achievements: Achievement[];
   newBadge: Achievement | null;
   progress: Progress | null;
+  streak: Streak;
   onDismissToast: () => void;
 }
 
-export default function AchievementBadges({ achievements, newBadge, progress, onDismissToast }: Props) {
+export default function AchievementBadges({ achievements, newBadge, progress, streak, onDismissToast }: Props) {
   useEffect(() => {
     if (!newBadge) return;
     const t = setTimeout(onDismissToast, 4000);
@@ -30,6 +36,11 @@ export default function AchievementBadges({ achievements, newBadge, progress, on
       <div className="achievements">
         <div className="achievements-top">
           <span className="achievements-label">Milestones</span>
+          {streak.currentStreak > 0 && (
+            <span className="streak-badge" title={`Longest streak: ${streak.longestStreak} day${streak.longestStreak === 1 ? '' : 's'}`}>
+              🔥 {streak.currentStreak} day{streak.currentStreak === 1 ? '' : 's'}
+            </span>
+          )}
           <div className="badges-row">
             {unlocked.map(a => (
               <div key={a.id} className="badge unlocked" title={a.description}>
