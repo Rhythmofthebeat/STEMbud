@@ -8,6 +8,7 @@ interface Props {
   onSignOut: () => void;
   onSignInClick: () => void;
   onToggleSidebar: () => void;
+  onToggleNotebook: () => void;
 }
 
 export default function Header({
@@ -20,6 +21,7 @@ export default function Header({
   onSignOut,
   onSignInClick,
   onToggleSidebar,
+  onToggleNotebook,
 }: Props) {
   return (
     <header className="header">
@@ -67,6 +69,18 @@ export default function Header({
           Generate Quiz
         </button>
       )}
+
+      <button
+        className="notebook-toggle-btn"
+        onClick={onToggleNotebook}
+        title="Your notebook"
+        aria-label="Toggle notebook"
+      >
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <path d="M5 3.5h9A1.5 1.5 0 0 1 15.5 5v11a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 16V5A1.5 1.5 0 0 1 5 3.5Z" stroke="currentColor" strokeWidth="1.4"/>
+          <path d="M7 7.5h6M7 10.5h6M7 13.5h3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+        </svg>
+      </button>
 
       <div className="header-badge">
         <span className="online-dot" />

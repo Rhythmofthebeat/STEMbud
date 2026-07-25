@@ -3,8 +3,10 @@ import { useTheme } from './hooks/useTheme';
 import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
 import { useAchievements } from './hooks/useAchievements';
+import { useNotes } from './hooks/useNotes';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import NotebookPanel from './components/NotebookPanel';
 import AuthScreen from './components/AuthScreen';
 import ResetPasswordScreen from './components/ResetPasswordScreen';
 import ChatInterface from './components/ChatInterface';
@@ -58,6 +60,8 @@ export default function App() {
     openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
   );
   const { achievements, newBadge, progress, clearNewBadge } = useAchievements(userId, messages.length);
+  const { notes, createNote, updateNote, deleteNote } = useNotes(userId);
+  const [notebookOpen, setNotebookOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
@@ -107,6 +111,15 @@ export default function App() {
         />
       )}
 
+      <NotebookPanel
+        open={notebookOpen}
+        notes={notes}
+        onCreate={createNote}
+        onUpdate={updateNote}
+        onDelete={deleteNote}
+        onClose={() => setNotebookOpen(false)}
+      />
+
       {authModalOpen && (
         <div className="auth-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setAuthModalOpen(false)}>
           <AuthScreen
@@ -128,7 +141,8 @@ export default function App() {
         signedIn={!!user}
         onSignOut={signOut}
         onSignInClick={() => openAuthModal()}
-        onToggleSidebar={() => setSidebarOpen((o) => !o)}
+        onToggleSidebar={() => { setSidebarOpen((o) => !o); setNotebookOpen(false); }}
+        onToggleNotebook={() => { setNotebookOpen((o) => !o); setSidebarOpen(false); }}
       />
 
       {appConfig && !appConfig.vector_store_configured && (
