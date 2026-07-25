@@ -23,8 +23,8 @@ const upload = multer({
 
 // Publishable key only — sufficient to validate a user's access token via getUser().
 const supabaseAuth = createClient(
-  'https://xjydqqhfbaskvfumdbjr.supabase.co',
-  'sb_publishable_pNwEPf2ZbnECRkBFFKuZJw_MtvgNKaT'
+    'https://uwytwimfqpoxzafgglju.supabase.co',
+    'sb_publishable_Wxnk1mwo_Q5TBzjn-QuaUg_0HH8G69V'
 );
 
 // Identifies the caller if they sent a valid Supabase session token, but never blocks the request —
