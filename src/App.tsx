@@ -21,10 +21,9 @@ export default function App() {
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
-  // Fetch safe config from server
   useEffect(() => {
     fetch('/api/config')
-      .then((r) => r.json())
+      .then(r => r.json())
       .then(setAppConfig)
       .catch(() => null);
   }, []);
@@ -40,40 +39,49 @@ export default function App() {
     <div className="app" data-theme={theme}>
       <Header theme={theme} onToggleTheme={toggleTheme} />
 
-      {/* Config warning — shown until vector store ID is set */}
       {appConfig && !appConfig.vector_store_configured && (
         <div className="config-banner">
-          ⚠️{' '}
+          <span className="config-banner-icon">⚠️</span>
           <span>
-            <strong>Vector store not configured.</strong> Open <code>config.json</code> and replace{' '}
-            <code>YOUR_VECTOR_STORE_ID_HERE</code> with your OpenAI Vector Store ID (e.g.{' '}
-            <code>vs_abc123</code>). STEMMY will still answer general STEM questions without it.
+            <strong>Vector store not connected.</strong> Open <code>config.json</code> and replace{' '}
+            <code>YOUR_VECTOR_STORE_ID_HERE</code> with your OpenAI Vector Store ID to enable citations from your STEM corpus.
           </span>
         </div>
       )}
 
-      {/* Main chat or welcome */}
       {hasMessages ? (
         <ChatInterface messages={messages} isLoading={isLoading} />
       ) : (
         <div className="welcome">
-          <div className="welcome-avatar">⚛️</div>
-          <div className="welcome-name">Hi, I'm STEMMY!</div>
-          <div className="welcome-msg">
-            Ask me anything about your homework or anything confusing in STEM!
+          <div className="welcome-orb welcome-orb-1" />
+          <div className="welcome-orb welcome-orb-2" />
+          <div className="welcome-card">
+            <div className="welcome-avatar">
+              <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
+                <circle cx="18" cy="18" r="4" fill="white"/>
+                <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none"/>
+                <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(60 18 18)"/>
+                <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(120 18 18)"/>
+              </svg>
+            </div>
+            <h1 className="welcome-name">Hi, I'm STEMMY!</h1>
+            <p className="welcome-msg">
+              Ask me anything about your homework or anything confusing in STEM.<br />
+              I'm here to explain, quiz you, and help you master any topic.
+            </p>
+            <div className="welcome-divider" />
+            <p className="welcome-hint">Try a question below or type your own ↓</p>
+            <StarterQuestions onSelect={handleSend} />
           </div>
-          <StarterQuestions onSelect={handleSend} />
         </div>
       )}
 
-      {/* Achievement badges strip */}
       <AchievementBadges
         achievements={achievements}
         newBadge={newBadge}
         onDismissToast={clearNewBadge}
       />
 
-      {/* Input */}
       <InputArea
         onSend={handleSend}
         isLoading={isLoading}
