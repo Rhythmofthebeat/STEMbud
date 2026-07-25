@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import OpenAI from 'openai';
-import { readFileSync, existsSync } from 'fs';
+import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -197,10 +197,9 @@ if (process.env.NODE_ENV === 'production') {
 export default app;
 
 if (!process.env.VERCEL) {
-    const isDev = process.env.NODE_ENV !== 'production';
-    const port = isDev ? 3001 : parseInt(process.env.PORT || '5000', 10);
-    app.listen(port, '0.0.0.0', () => {
-          console.log(`STEMMY server on port ${port} (${isDev ? 'dev' : 'prod'})`);
-    });
-}
+  const isDev = process.env.NODE_ENV !== 'production';
+  const port = isDev ? 3001 : parseInt(process.env.PORT ?? '5000', 10);
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`🚀 STEMMY server on port ${port} (${isDev ? 'dev' : 'prod'})`);
+  });
 }
