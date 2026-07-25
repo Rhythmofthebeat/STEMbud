@@ -410,6 +410,20 @@ body {
 .auth-submit:hover:not(:disabled) { opacity: .9; }
 .auth-submit:disabled { opacity: .5; cursor: not-allowed; }
 
+.auth-forgot {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0;
+  margin-top: -4px;
+}
+.auth-forgot:hover { text-decoration: underline; }
+
 .auth-switch {
   background: none;
   border: none;

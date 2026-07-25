@@ -3,16 +3,25 @@ import { useState, type FormEvent } from 'react';
 interface Props {
   onSignIn: (email: string, password: string) => Promise<void>;
   onSignUp: (email: string, password: string, displayName: string) => Promise<void>;
+  onRequestPasswordReset: (email: string) => Promise<void>;
 }
 
-export default function AuthScreen({ onSignIn, onSignUp }: Props) {
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+type Mode = 'signin' | 'signup' | 'reset';
+
+export default function AuthScreen({ onSignIn, onSignUp, onRequestPasswordReset }: Props) {
+  const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setError('');
+    setInfo('');
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -24,6 +33,9 @@ export default function AuthScreen({ onSignIn, onSignUp }: Props) {
         await onSignUp(email, password, displayName);
         setInfo('Account created. Check your email to confirm, then sign in.');
         setMode('signin');
+      } else if (mode === 'reset') {
+        await onRequestPasswordReset(email);
+        setInfo("If that email has an account, we've sent a reset link.");
       } else {
         await onSignIn(email, password);
       }
@@ -33,6 +45,13 @@ export default function AuthScreen({ onSignIn, onSignUp }: Props) {
       setSubmitting(false);
     }
   };
+
+  const heading =
+    mode === 'signin'
+      ? 'Sign in to pick up right where you left off.'
+      : mode === 'signup'
+      ? 'Create an account to save your progress across devices.'
+      : "Enter your email and we'll send you a reset link.";
 
   return (
     <div className="welcome">
@@ -49,11 +68,7 @@ export default function AuthScreen({ onSignIn, onSignUp }: Props) {
         </div>
         <div className="welcome-tagline">Your AI STEM Tutor</div>
         <h1 className="welcome-name">STEMMY</h1>
-        <p className="welcome-msg">
-          {mode === 'signin'
-            ? 'Sign in to pick up right where you left off.'
-            : 'Create an account to save your progress across devices.'}
-        </p>
+        <p className="welcome-msg">{heading}</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {mode === 'signup' && (
@@ -75,30 +90,48 @@ export default function AuthScreen({ onSignIn, onSignUp }: Props) {
             autoComplete="email"
             required
           />
-          <input
-            className="auth-input"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-            minLength={6}
-            required
-          />
+          {mode !== 'reset' && (
+            <input
+              className="auth-input"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
+              minLength={6}
+              required
+            />
+          )}
+
+          {mode === 'signin' && (
+            <button type="button" className="auth-forgot" onClick={() => switchMode('reset')}>
+              Forgot password?
+            </button>
+          )}
 
           {error && <div className="auth-error">{error}</div>}
           {info && <div className="auth-info">{info}</div>}
 
           <button className="auth-submit" type="submit" disabled={submitting}>
-            {submitting ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Sign up'}
+            {submitting
+              ? 'Please wait…'
+              : mode === 'signin'
+              ? 'Sign in'
+              : mode === 'signup'
+              ? 'Sign up'
+              : 'Send reset link'}
           </button>
         </form>
 
         <button
           className="auth-switch"
-          onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setInfo(''); }}
+          onClick={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
         >
-          {mode === 'signin' ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+          {mode === 'signin'
+            ? "Don't have an account? Sign up"
+            : mode === 'signup'
+            ? 'Already have an account? Sign in'
+            : 'Back to sign in'}
         </button>
       </div>
     </div>

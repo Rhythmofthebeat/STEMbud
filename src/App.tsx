@@ -5,6 +5,7 @@ import { useChat } from './hooks/useChat';
 import { useAchievements } from './hooks/useAchievements';
 import Header from './components/Header';
 import AuthScreen from './components/AuthScreen';
+import ResetPasswordScreen from './components/ResetPasswordScreen';
 import ChatInterface from './components/ChatInterface';
 import StarterQuestions from './components/StarterQuestions';
 import AchievementBadges from './components/AchievementBadges';
@@ -18,7 +19,17 @@ interface AppConfig {
 
 export default function App() {
   const [theme, toggleTheme] = useTheme();
-  const { session, user, loading: authLoading, signIn, signUp, signOut } = useAuth();
+  const {
+    session,
+    user,
+    loading: authLoading,
+    passwordRecovery,
+    signIn,
+    signUp,
+    signOut,
+    requestPasswordReset,
+    updatePassword,
+  } = useAuth();
   const userId = user?.id ?? null;
   const accessToken = session?.access_token ?? null;
 
@@ -43,10 +54,18 @@ export default function App() {
     return <div className="app" data-theme={theme} />;
   }
 
+  if (passwordRecovery) {
+    return (
+      <div className="app" data-theme={theme}>
+        <ResetPasswordScreen onUpdatePassword={updatePassword} />
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="app" data-theme={theme}>
-        <AuthScreen onSignIn={signIn} onSignUp={signUp} />
+        <AuthScreen onSignIn={signIn} onSignUp={signUp} onRequestPasswordReset={requestPasswordReset} />
       </div>
     );
   }
