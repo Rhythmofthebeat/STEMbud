@@ -9,8 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load config
-const configPath = path.join(__dirname, 'config.json');
-const config = JSON.parse(readFileSync(configPath, 'utf-8'));
+import config from './config.json';
 
 const app = express();
 const upload = multer({
@@ -195,9 +194,13 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const isDev = process.env.NODE_ENV !== 'production';
-const port = isDev ? 3001 : parseInt(process.env.PORT ?? '5000', 10);
+export default app;
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`🚀 STEMMY server on port ${port} (${isDev ? 'dev' : 'prod'})`);
-});
+if (!process.env.VERCEL) {
+    const isDev = process.env.NODE_ENV !== 'production';
+    const port = isDev ? 3001 : parseInt(process.env.PORT || '5000', 10);
+    app.listen(port, '0.0.0.0', () => {
+          console.log(`STEMMY server on port ${port} (${isDev ? 'dev' : 'prod'})`);
+    });
+}
+}
