@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import OpenAI from 'openai';
+import { createClient } from '@supabase/supabase-js';
 import { existsSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -16,6 +17,27 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024 },
 });
+
+// Publishable key only — sufficient to validate a user's access token via getUser().
+const supabaseAuth = createClient(
+  'https://xjydqqhfbaskvfumdbjr.supabase.co',
+  'sb_publishable_pNwEPf2ZbnECRkBFFKuZJw_MtvgNKaT'
+);
+
+async function requireUser(req: express.Request, res: express.Response): Promise<boolean> {
+  const authHeader = req.headers.authorization ?? '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (!token) {
+    res.status(401).json({ error: 'Sign in required.' });
+    return false;
+  }
+  const { data, error } = await supabaseAuth.auth.getUser(token);
+  if (error || !data.user) {
+    res.status(401).json({ error: 'Your session has expired. Please sign in again.' });
+    return false;
+  }
+  return true;
+}
 
 app.use(express.json());
 
@@ -51,6 +73,8 @@ app.get('/api/config', (_req, res) => {
 
 // Chat streaming endpoint (SSE)
 app.post('/api/chat', async (req, res) => {
+  if (!(await requireUser(req, res))) return;
+
   const { message, previousResponseId, uploadedFileId } = req.body as {
     message: string;
     previousResponseId?: string;
@@ -156,6 +180,7 @@ const SUPPORTED_UPLOAD_EXTENSIONS = ['.pdf', '.txt', '.docx', '.md'];
 
 // File upload endpoint
 app.post('/api/upload', upload.single('file'), async (req, res) => {
+  if (!(await requireUser(req, res))) return;
   if (!req.file) return res.status(400).json({ error: 'No file provided' });
 
   const ext = path.extname(req.file.originalname).toLowerCase();

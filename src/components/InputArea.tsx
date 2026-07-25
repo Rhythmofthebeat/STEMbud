@@ -7,9 +7,10 @@ interface Props {
   uploadedFile: UploadedFile | null;
   onUpload: (file: UploadedFile) => void;
   onClearUpload: () => void;
+  accessToken: string | null;
 }
 
-export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, onClearUpload }: Props) {
+export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, onClearUpload, accessToken }: Props) {
   const [text, setText] = useState('');
   const [uploading, setUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -49,7 +50,11 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
     try {
       const form = new FormData();
       form.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: form });
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+        body: form,
+      });
       if (!res.ok) throw new Error(await res.text());
       const data: UploadedFile = await res.json();
       onUpload(data);

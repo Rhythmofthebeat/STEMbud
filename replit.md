@@ -8,6 +8,7 @@ AI-powered STEM homework helper built with React + TypeScript (Vite) frontend an
 - **Backend**: Express 4, TypeScript, tsx (port 3001 in dev, $PORT in production)
 - **AI**: OpenAI Responses API (`client.responses.create`) with file_search tool
 - **Storage**: OpenAI Vector Store (corpus pre-loaded, ID in `config.json`)
+- **Auth & data**: Supabase (email/password auth, Postgres for achievements + chat history). Project URL and publishable key are hardcoded in `src/lib/supabase.ts` / `server.ts` — safe to expose, access is enforced entirely by Postgres RLS policies (see `supabase/migrations/`). `/api/chat` and `/api/upload` reject any request without a valid Supabase session token.
 
 ## Setup
 
@@ -42,11 +43,13 @@ NODE_ENV=production npx tsx server.ts   # serves dist/ + API on $PORT
 
 ## Features
 
-- 💬 Streaming chat responses via SSE
+- 🔐 Email/password sign-up & sign-in (Supabase Auth), gating the whole app
+- 💬 Streaming chat responses via SSE, persisted per-user and restored on login
+- 📝 One-click quiz generation targeting topics the student struggled with
 - 📚 Expandable source citations from the vector store
 - 📎 User file uploads (PDF, txt, docx, md) scoped per conversation
 - 🌙 Light / dark mode (auto-detects system preference)
-- 🏅 Achievement badges based on time spent learning
+- 🏅 Achievement badges based on time spent learning, synced to your account
 - 💡 Suggested starter questions on the welcome screen
 
 ## Achievement Badges

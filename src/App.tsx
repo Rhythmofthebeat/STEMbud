@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from './hooks/useTheme';
+import { useAuth } from './hooks/useAuth';
 import { useChat } from './hooks/useChat';
 import { useAchievements } from './hooks/useAchievements';
 import Header from './components/Header';
+import AuthScreen from './components/AuthScreen';
 import ChatInterface from './components/ChatInterface';
 import StarterQuestions from './components/StarterQuestions';
 import AchievementBadges from './components/AchievementBadges';
@@ -16,8 +18,12 @@ interface AppConfig {
 
 export default function App() {
   const [theme, toggleTheme] = useTheme();
-  const { messages, sendMessage, generateQuiz, isLoading } = useChat();
-  const { achievements, newBadge, clearNewBadge } = useAchievements(messages.length);
+  const { session, user, loading: authLoading, signIn, signUp, signOut } = useAuth();
+  const userId = user?.id ?? null;
+  const accessToken = session?.access_token ?? null;
+
+  const { messages, sendMessage, generateQuiz, isLoading, isHistoryLoading } = useChat(userId, accessToken);
+  const { achievements, newBadge, clearNewBadge } = useAchievements(userId, messages.length);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
@@ -33,6 +39,18 @@ export default function App() {
     setUploadedFile(null);
   };
 
+  if (authLoading) {
+    return <div className="app" data-theme={theme} />;
+  }
+
+  if (!user) {
+    return (
+      <div className="app" data-theme={theme}>
+        <AuthScreen onSignIn={signIn} onSignUp={signUp} />
+      </div>
+    );
+  }
+
   const hasMessages = messages.length > 0;
   const userTurns = messages.filter((m) => m.role === 'user').length;
   const quizDisabled = isLoading || userTurns < 2;
@@ -45,6 +63,7 @@ export default function App() {
         hasMessages={hasMessages}
         quizDisabled={quizDisabled}
         onGenerateQuiz={generateQuiz}
+        onSignOut={signOut}
       />
 
       {appConfig && !appConfig.vector_store_configured && (
@@ -61,7 +80,9 @@ export default function App() {
         </div>
       )}
 
-      {hasMessages ? (
+      {isHistoryLoading ? (
+        <div className="welcome" />
+      ) : hasMessages ? (
         <ChatInterface messages={messages} isLoading={isLoading} />
       ) : (
         <div className="welcome">
@@ -114,6 +135,7 @@ export default function App() {
         uploadedFile={uploadedFile}
         onUpload={setUploadedFile}
         onClearUpload={() => setUploadedFile(null)}
+        accessToken={accessToken}
       />
     </div>
   );

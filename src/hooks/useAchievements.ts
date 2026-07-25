@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { Achievement } from '../types';
+import { supabase } from '../lib/supabase';
 
 const BADGE_DEFS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = [
   { id: 'newcomer',      emoji: '🌱', name: 'Newcomer',       description: 'Sent your first message!',    minutesRequired: 0 },
@@ -11,23 +12,32 @@ const BADGE_DEFS: Omit<Achievement, 'unlocked' | 'unlockedAt'>[] = [
 ];
 
 const STORAGE_KEY = 'stembud_minutes';
-const UNLOCKED_KEY = 'stembud_unlocked';
 
 function loadMinutes(): number {
   return parseInt(localStorage.getItem(STORAGE_KEY) ?? '0', 10) || 0;
 }
 
-function loadUnlocked(): Set<string> {
-  try {
-    const raw = localStorage.getItem(UNLOCKED_KEY);
-    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
-  } catch { return new Set(); }
-}
-
-export function useAchievements(messageCount: number) {
+export function useAchievements(userId: string | null, messageCount: number) {
   const [minutesUsed, setMinutesUsed] = useState(loadMinutes);
-  const [unlocked, setUnlocked] = useState<Set<string>>(loadUnlocked);
+  const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
   const [newBadge, setNewBadge] = useState<Achievement | null>(null);
+  const unlockedRef = useRef(unlocked);
+  unlockedRef.current = unlocked;
+
+  // Load this user's unlocked badges from Supabase
+  useEffect(() => {
+    if (!userId) {
+      setUnlocked(new Set());
+      return;
+    }
+    supabase
+      .from('achievements')
+      .select('badge_id')
+      .eq('user_id', userId)
+      .then(({ data }) => {
+        setUnlocked(new Set((data ?? []).map((r) => r.badge_id)));
+      });
+  }, [userId]);
 
   // Tick every minute once user has sent at least one message
   useEffect(() => {
@@ -42,35 +52,30 @@ export function useAchievements(messageCount: number) {
     return () => clearInterval(interval);
   }, [messageCount]);
 
+  const unlock = useCallback((id: string) => {
+    if (!userId || unlockedRef.current.has(id)) return;
+    setUnlocked((prev) => new Set(prev).add(id));
+    const def = BADGE_DEFS.find((d) => d.id === id);
+    if (def) {
+      setNewBadge({ ...def, unlocked: true, unlockedAt: Date.now() });
+      void supabase.from('achievements').insert({ user_id: userId, badge_id: id });
+    }
+  }, [userId]);
+
   // Unlock newcomer badge on first message
   useEffect(() => {
-    if (messageCount > 0 && !unlocked.has('newcomer')) {
-      unlock('newcomer');
-    }
-  }, [messageCount]); // eslint-disable-line
+    if (messageCount > 0 && userId) unlock('newcomer');
+  }, [messageCount, userId]); // eslint-disable-line
 
   // Check time-based badges
   useEffect(() => {
     for (const def of BADGE_DEFS) {
-      if (def.minutesRequired > 0 && minutesUsed >= def.minutesRequired && !unlocked.has(def.id)) {
+      if (def.minutesRequired > 0 && minutesUsed >= def.minutesRequired && !unlockedRef.current.has(def.id)) {
         unlock(def.id);
         break; // show one toast at a time
       }
     }
-  }, [minutesUsed]); // eslint-disable-line
-
-  const unlock = useCallback((id: string) => {
-    setUnlocked((prev) => {
-      const next = new Set(prev).add(id);
-      localStorage.setItem(UNLOCKED_KEY, JSON.stringify([...next]));
-      return next;
-    });
-    const def = BADGE_DEFS.find((d) => d.id === id);
-    if (def) {
-      const badge: Achievement = { ...def, unlocked: true, unlockedAt: Date.now() };
-      setNewBadge(badge);
-    }
-  }, []);
+  }, [minutesUsed, unlock]);
 
   const clearNewBadge = useCallback(() => setNewBadge(null), []);
 

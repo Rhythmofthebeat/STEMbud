@@ -4,9 +4,10 @@ interface Props {
   hasMessages: boolean;
   quizDisabled: boolean;
   onGenerateQuiz: () => void;
+  onSignOut: () => void;
 }
 
-export default function Header({ theme, onToggleTheme, hasMessages, quizDisabled, onGenerateQuiz }: Props) {
+export default function Header({ theme, onToggleTheme, hasMessages, quizDisabled, onGenerateQuiz, onSignOut }: Props) {
   return (
     <header className="header">
       <div className="header-brand">
@@ -61,6 +62,18 @@ export default function Header({ theme, onToggleTheme, hasMessages, quizDisabled
             <path d="M17 11.3A7 7 0 0 1 8.7 3a7 7 0 1 0 8.3 8.3Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
           </svg>
         )}
+      </button>
+
+      <button
+        className="header-signout-btn"
+        onClick={onSignOut}
+        title="Sign out"
+        aria-label="Sign out"
+      >
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <path d="M8 17H5a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 5 3h3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M13 13.5 17 10l-4-3.5M17 10H8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </button>
     </header>
   );
