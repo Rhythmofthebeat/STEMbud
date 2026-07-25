@@ -16,7 +16,7 @@ interface AppConfig {
 
 export default function App() {
   const [theme, toggleTheme] = useTheme();
-  const { messages, sendMessage, isLoading } = useChat();
+  const { messages, sendMessage, generateQuiz, isLoading } = useChat();
   const { achievements, newBadge, clearNewBadge } = useAchievements(messages.length);
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
@@ -34,14 +34,26 @@ export default function App() {
   };
 
   const hasMessages = messages.length > 0;
+  const userTurns = messages.filter((m) => m.role === 'user').length;
+  const quizDisabled = isLoading || userTurns < 2;
 
   return (
     <div className="app" data-theme={theme}>
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        hasMessages={hasMessages}
+        quizDisabled={quizDisabled}
+        onGenerateQuiz={generateQuiz}
+      />
 
       {appConfig && !appConfig.vector_store_configured && (
         <div className="config-banner">
-          <span className="config-banner-icon">⚠️</span>
+          <svg className="config-banner-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
+            <path d="M10 2 1.5 17h17L10 2Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+            <path d="M10 8v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            <circle cx="10" cy="14.5" r=".9" fill="currentColor"/>
+          </svg>
           <span>
             <strong>Vector store not connected.</strong> Open <code>config.json</code> and replace{' '}
             <code>YOUR_VECTOR_STORE_ID_HERE</code> with your OpenAI Vector Store ID to enable citations from your STEM corpus.
@@ -64,11 +76,25 @@ export default function App() {
                 <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(120 18 18)"/>
               </svg>
             </div>
-            <h1 className="welcome-name">Hi, I'm STEMMY!</h1>
+            <div className="welcome-tagline">Your AI STEM Tutor</div>
+            <h1 className="welcome-name">STEMMY</h1>
             <p className="welcome-msg">
-              Ask me anything about your homework or anything confusing in STEM.<br />
-              I'm here to explain, quiz you, and help you master any topic.
+              Get clear, cited explanations for science, technology, engineering, and math.
+              Upload your notes or homework, and STEMMY will walk through the concepts —
+              then quiz you on what you're still working to master.
             </p>
+            <div className="welcome-partner">
+              <img
+                className="welcome-partner-logo"
+                src="/minorities-in-stem-logo.png"
+                alt="Minorities in STEM logo"
+                onError={(e) => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none'; }}
+              />
+              <span className="welcome-partner-text">
+                <strong>Minorities in STEM</strong>
+                An MIS initiative, built to close the opportunity gap in STEM education.
+              </span>
+            </div>
             <div className="welcome-divider" />
             <p className="welcome-hint">Try a question below or type your own ↓</p>
             <StarterQuestions onSelect={handleSend} />

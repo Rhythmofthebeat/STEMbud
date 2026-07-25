@@ -24,7 +24,12 @@ export default function MessageBubble({ message }: Props) {
 
       <div className="msg-body">
         {message.uploadedFile && (
-          <span className="upload-chip">📎 {message.uploadedFile.name}</span>
+          <span className="upload-chip">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="11" height="11">
+              <path d="M13.5 6.5 8.2 11.8a2 2 0 1 1-2.83-2.83l5.66-5.66a3.5 3.5 0 1 1 4.95 4.95l-6.36 6.36" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+            {message.uploadedFile.name}
+          </span>
         )}
         <div className={`msg-bubble ${isUser ? 'user' : 'assistant'} ${message.error ? 'error-bubble' : ''} ${message.isStreaming && message.content ? 'streaming-cursor' : ''}`}>
           {message.isStreaming && !message.content
@@ -38,7 +43,12 @@ export default function MessageBubble({ message }: Props) {
       </div>
 
       {isUser && (
-        <div className="msg-avatar user-av">🎓</div>
+        <div className="msg-avatar user-av">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+            <circle cx="10" cy="6.5" r="3.2" stroke="currentColor" strokeWidth="1.4"/>
+            <path d="M3.5 17c.7-3.4 3.4-5.5 6.5-5.5s5.8 2.1 6.5 5.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+          </svg>
+        </div>
       )}
     </div>
   );

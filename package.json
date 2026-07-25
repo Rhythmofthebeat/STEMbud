@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"npx tsx watch server.ts\" \"vite\"",
     "build": "vite build",
-    "start": "node -e \"process.env.NODE_ENV='production'\" server.ts",
+    "start": "NODE_ENV=production npx tsx server.ts",
     "preview": "vite preview"
   },
   "dependencies": {

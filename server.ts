@@ -98,7 +98,7 @@ app.post('/api/chat', async (req, res) => {
       input = [
         {
           role: 'user',
-          content: message,
+          content: `${message}\n\n[A file has been attached to this message. Use file_search to thoroughly read and extract its content — text, problems, data, and any relevant details — before answering.]`,
           // @ts-ignore – attachments are valid per the Responses API spec
           attachments: [{ file_id: uploadedFileId, tools: [{ type: 'file_search' }] }],
         },
@@ -152,9 +152,19 @@ app.post('/api/chat', async (req, res) => {
   res.end();
 });
 
+// File types the file_search tool can actually extract text from
+const SUPPORTED_UPLOAD_EXTENSIONS = ['.pdf', '.txt', '.docx', '.md'];
+
 // File upload endpoint
 app.post('/api/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file provided' });
+
+  const ext = path.extname(req.file.originalname).toLowerCase();
+  if (!SUPPORTED_UPLOAD_EXTENSIONS.includes(ext)) {
+    return res.status(400).json({
+      error: `Unsupported file type "${ext}". Please upload one of: ${SUPPORTED_UPLOAD_EXTENSIONS.join(', ')}.`,
+    });
+  }
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return res.status(503).json({ error: 'OPENAI_API_KEY not configured' });

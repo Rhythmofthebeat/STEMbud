@@ -111,5 +111,11 @@ export function useChat() {
     [isLoading, previousResponseId]
   );
 
-  return { messages, sendMessage, isLoading };
+  const generateQuiz = useCallback(() => {
+    sendMessage(
+      "Based on everything we've discussed so far, generate a short quiz (4-6 questions) focused on the topics I've struggled with the most. Mix multiple-choice and short-answer questions, and include an answer key with brief explanations at the end."
+    );
+  }, [sendMessage]);
+
+  return { messages, sendMessage, generateQuiz, isLoading };
 }

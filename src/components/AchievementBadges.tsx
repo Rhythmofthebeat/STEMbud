@@ -20,7 +20,7 @@ export default function AchievementBadges({ achievements, newBadge, onDismissToa
   return (
     <>
       <div className="achievements">
-        <span className="achievements-label">🏅 Achievements</span>
+        <span className="achievements-label">Milestones</span>
         <div className="badges-row">
           {unlocked.map(a => (
             <div key={a.id} className="badge unlocked" title={a.description}>
@@ -41,7 +41,7 @@ export default function AchievementBadges({ achievements, newBadge, onDismissToa
         <div className="badge-toast" onClick={onDismissToast}>
           <span className="toast-emoji">{newBadge.emoji}</span>
           <div className="toast-body">
-            <div className="toast-title">Badge Unlocked!</div>
+            <div className="toast-title">Milestone reached</div>
             <div className="toast-desc">{newBadge.name} — {newBadge.description}</div>
           </div>
           <button className="toast-close">×</button>
