@@ -65,12 +65,20 @@ app.post('/api/chat', async (req, res) => {
 
   const openai = new OpenAI({ apiKey });
 
+  // Disable Nagle's algorithm so each chunk is sent immediately
+  req.socket?.setNoDelay(true);
+
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // prevents proxy/nginx from buffering
   res.flushHeaders();
 
-  const send = (data: object) => res.write(`data: ${JSON.stringify(data)}\n\n`);
+  const send = (data: object) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+    // Force immediate flush on every chunk
+    if (typeof (res as any).flush === 'function') (res as any).flush();
+  };
 
   try {
     const tools: OpenAI.Responses.Tool[] = [];
