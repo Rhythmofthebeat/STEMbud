@@ -32,6 +32,8 @@ export interface ConversationSummary {
   id: string;
   updatedAt: string;
   preview: string;
+  pinned: boolean;
+  shareToken: string | null;
 }
 
 export interface Note {

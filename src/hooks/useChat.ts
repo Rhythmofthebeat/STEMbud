@@ -63,8 +63,10 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
   const refreshConversations = useCallback(async (uid_: string) => {
     const { data: convRows } = await supabase
       .from('conversations')
-      .select('id, title, updated_at')
+      .select('id, title, updated_at, pinned, share_token')
       .eq('user_id', uid_)
+      .eq('archived', false)
+      .order('pinned', { ascending: false })
       .order('updated_at', { ascending: false });
 
     const ids = (convRows ?? []).map((c) => c.id);
@@ -88,6 +90,8 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
         id: c.id,
         updatedAt: c.updated_at,
         preview: c.title ?? previews[c.id] ?? 'New conversation',
+        pinned: c.pinned,
+        shareToken: c.share_token,
       }))
     );
   }, []);
@@ -134,6 +138,54 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     await supabase.from('conversations').update({ title: trimmed }).eq('id', id);
   }, []);
 
+  const pinConversation = useCallback(async (id: string, pinned: boolean) => {
+    setConversations((prev) => {
+      const next = prev.map((c) => (c.id === id ? { ...c, pinned } : c));
+      return [...next].sort((a, b) => {
+        if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+        return b.updatedAt.localeCompare(a.updatedAt);
+      });
+    });
+    await supabase.from('conversations').update({ pinned }).eq('id', id);
+  }, []);
+
+  const archiveConversation = useCallback(async (id: string) => {
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+    await supabase.from('conversations').update({ archived: true }).eq('id', id);
+    setConversationId((current) => {
+      if (current !== id) return current;
+      setMessages([]);
+      setPreviousResponseId(undefined);
+      return null;
+    });
+  }, []);
+
+  const deleteConversation = useCallback(async (id: string) => {
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+    await supabase.from('conversations').delete().eq('id', id);
+    setConversationId((current) => {
+      if (current !== id) return current;
+      setMessages([]);
+      setPreviousResponseId(undefined);
+      return null;
+    });
+  }, []);
+
+  const shareConversation = useCallback(async (id: string): Promise<string | null> => {
+    const existing = conversations.find((c) => c.id === id)?.shareToken;
+    if (existing) return existing;
+    const token = crypto.randomUUID();
+    const { error } = await supabase.from('conversations').update({ share_token: token }).eq('id', id);
+    if (error) return null;
+    setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, shareToken: token } : c)));
+    return token;
+  }, [conversations]);
+
+  const unshareConversation = useCallback(async (id: string) => {
+    setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, shareToken: null } : c)));
+    await supabase.from('conversations').update({ share_token: null }).eq('id', id);
+  }, []);
+
   // On sign-in, load the conversation list + jump into the most recent one.
   // Anonymous users get their last session restored from this browser's localStorage.
   useEffect(() => {
@@ -159,6 +211,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
         .from('conversations')
         .select('id')
         .eq('user_id', userId)
+        .eq('archived', false)
         .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -375,6 +428,11 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     loadConversation,
     startNewConversation,
     renameConversation,
+    pinConversation,
+    archiveConversation,
+    deleteConversation,
+    shareConversation,
+    unshareConversation,
     anonQuota,
   };
 }

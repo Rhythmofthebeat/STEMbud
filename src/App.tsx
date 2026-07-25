@@ -57,6 +57,11 @@ export default function App() {
     loadConversation,
     startNewConversation,
     renameConversation,
+    pinConversation,
+    archiveConversation,
+    deleteConversation,
+    shareConversation,
+    unshareConversation,
     anonQuota,
   } = useChat(userId, accessToken, () =>
     openAuthModal("You've hit the limit for anonymous use. Sign in for unlimited access.")
@@ -98,8 +103,13 @@ export default function App() {
   }
 
   const hasMessages = messages.length > 0;
-  const userTurns = messages.filter((m) => m.role === 'user').length;
-  const quizDisabled = isLoading || userTurns < 2;
+  // Gate on actual usable content (a completed, non-error answer) rather than a raw turn
+  // count — loading an old conversation with plenty of history should enable this immediately,
+  // and a single solid exchange is already enough to quiz on.
+  const hasQuizzableContent = messages.some(
+    (m) => m.role === 'assistant' && m.content.trim().length > 0 && !m.error && !m.isStreaming
+  );
+  const quizDisabled = isLoading || !hasQuizzableContent;
 
   return (
     <div className="app" data-theme={theme}>
@@ -111,6 +121,11 @@ export default function App() {
           onSelect={loadConversation}
           onNewChat={startNewConversation}
           onRename={renameConversation}
+          onPin={pinConversation}
+          onArchive={archiveConversation}
+          onDelete={deleteConversation}
+          onShare={shareConversation}
+          onUnshare={unshareConversation}
           onClose={() => setSidebarOpen(false)}
         />
       )}
