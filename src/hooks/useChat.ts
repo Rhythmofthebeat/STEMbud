@@ -413,7 +413,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
 
   const generateQuiz = useCallback(() => {
     sendMessage(
-      "Based on everything we've discussed so far, generate a short quiz (4-6 questions) focused on the topics I've struggled with the most. Mix multiple-choice and short-answer questions, and include an answer key with brief explanations at the end."
+      "Based on everything we've discussed so far, generate a short quiz (4-6 questions) focused on the topics I've struggled with the most. Mix multiple-choice and short-answer questions. Do NOT include the answers yet — just number the questions and wait for me to answer them. Once I reply with my answers, grade them and walk through the correct answers with brief explanations."
     );
   }, [sendMessage]);
 
