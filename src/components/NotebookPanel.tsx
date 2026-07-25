@@ -57,6 +57,12 @@ export default function NotebookPanel({ open, notes, onCreate, onUpdate, onDelet
     if (editingId === id) setEditingId(null);
   };
 
+  const handleDeleteFromList = (n: Note) => {
+    if (window.confirm(`Delete "${n.title || 'Untitled note'}"? This can't be undone.`)) {
+      onDelete(n.id);
+    }
+  };
+
   return (
     <>
       {open && <div className="sidebar-backdrop" onClick={onClose} />}
@@ -110,10 +116,22 @@ export default function NotebookPanel({ open, notes, onCreate, onUpdate, onDelet
                 <div className="sidebar-empty">No notes yet — jot something down.</div>
               )}
               {notes.map((n) => (
-                <button key={n.id} className="sidebar-item" onClick={() => setEditingId(n.id)}>
-                  <span className="sidebar-item-preview">{n.title || 'Untitled note'}</span>
-                  <span className="sidebar-item-time">{relativeTime(n.updatedAt)}</span>
-                </button>
+                <div key={n.id} className="sidebar-item">
+                  <button className="sidebar-item-main" onClick={() => setEditingId(n.id)}>
+                    <span className="sidebar-item-preview">{n.title || 'Untitled note'}</span>
+                    <span className="sidebar-item-time">{relativeTime(n.updatedAt)}</span>
+                  </button>
+                  <button
+                    className="notebook-item-delete"
+                    onClick={(e) => { e.stopPropagation(); handleDeleteFromList(n); }}
+                    title="Delete note"
+                    aria-label="Delete note"
+                  >
+                    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
+                      <path d="M4 6h12M8 6V4.5A1.5 1.5 0 0 1 9.5 3h1A1.5 1.5 0 0 1 12 4.5V6m2 0v9.5A1.5 1.5 0 0 1 12.5 17h-5A1.5 1.5 0 0 1 6 15.5V6h8Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
               ))}
             </div>
           </>

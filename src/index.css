@@ -699,6 +699,24 @@ body {
 }
 .sidebar-item-menu-btn:hover { background: var(--surface); color: var(--primary); }
 
+.notebook-item-delete {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-right: 6px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.notebook-item-delete:hover { background: #FEF2F2; color: #DC2626; }
+[data-theme="dark"] .notebook-item-delete:hover { background: #1F0808; color: #FCA5A5; }
+
 .menu-backdrop {
   position: fixed;
   inset: 0;
