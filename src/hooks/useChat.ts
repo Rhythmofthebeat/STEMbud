@@ -5,6 +5,28 @@ import { supabase } from '../lib/supabase';
 let msgCounter = 0;
 const uid = () => `msg-${++msgCounter}-${Date.now()}`;
 
+const ANON_CHAT_KEY = 'stembud_anon_chat';
+
+interface AnonChatState {
+  messages: Message[];
+  previousResponseId?: string;
+}
+
+function loadAnonChat(): AnonChatState {
+  try {
+    const raw = localStorage.getItem(ANON_CHAT_KEY);
+    return raw ? (JSON.parse(raw) as AnonChatState) : { messages: [] };
+  } catch { return { messages: [] }; }
+}
+
+function saveAnonChat(state: AnonChatState) {
+  localStorage.setItem(ANON_CHAT_KEY, JSON.stringify(state));
+}
+
+function clearAnonChat() {
+  localStorage.removeItem(ANON_CHAT_KEY);
+}
+
 export function useChat(userId: string | null, accessToken: string | null, onRateLimited?: () => void) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,16 +100,18 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     setConversationId(null);
     setPreviousResponseId(undefined);
     setMessages([]);
-  }, []);
+    if (!userId) clearAnonChat();
+  }, [userId]);
 
   // On sign-in, load the conversation list + jump into the most recent one.
-  // Anonymous users get a blank, unsaved session.
+  // Anonymous users get their last session restored from this browser's localStorage.
   useEffect(() => {
     if (!userId) {
-      setMessages([]);
+      const saved = loadAnonChat();
+      setMessages(saved.messages);
+      setPreviousResponseId(saved.previousResponseId);
       setConversations([]);
       setConversationId(null);
-      setPreviousResponseId(undefined);
       setIsHistoryLoading(false);
       return;
     }
@@ -119,6 +143,14 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
 
     return () => { cancelled = true; };
   }, [userId, refreshConversations, loadConversation]);
+
+  // Anonymous sessions persist to this browser only, kept in sync as the conversation grows.
+  // Debounced since `messages` updates on every streamed token.
+  useEffect(() => {
+    if (userId) return;
+    const t = setTimeout(() => saveAnonChat({ messages, previousResponseId }), 400);
+    return () => clearTimeout(t);
+  }, [userId, messages, previousResponseId]);
 
   const persistMessage = useCallback(
     async (convId: string, msg: Message) => {
