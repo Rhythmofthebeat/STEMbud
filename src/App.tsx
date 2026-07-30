@@ -187,21 +187,42 @@ export default function App() {
           <div className="welcome-orb welcome-orb-1" />
           <div className="welcome-orb welcome-orb-2" />
           <div className="welcome-card">
-            <div className="welcome-avatar">
-              <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                <circle cx="18" cy="18" r="4" fill="white"/>
-                <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none"/>
-                <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(60 18 18)"/>
-                <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(120 18 18)"/>
-              </svg>
+            <div className="welcome-hero">
+              <div className="welcome-copy">
+                <div className="welcome-kicker">
+                  <span className="welcome-kicker-dot" />
+                  Built for curious minds
+                </div>
+                <h1 className="welcome-name">
+                  STEM makes more sense
+                  <span> when it feels personal.</span>
+                </h1>
+                <p className="welcome-msg">
+                  Meet STEMMY, your always-ready tutor for clear explanations, guided
+                  problem solving, and study help that moves at your pace.
+                </p>
+                <div className="welcome-feature-row">
+                  <span>Step-by-step help</span>
+                  <span>Homework scan</span>
+                  <span>Smart quizzes</span>
+                </div>
+              </div>
+              <div className="welcome-visual" aria-hidden="true">
+                <div className="welcome-visual-ring ring-one" />
+                <div className="welcome-visual-ring ring-two" />
+                <div className="welcome-avatar">
+                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+                    <circle cx="18" cy="18" r="4" fill="white"/>
+                    <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none"/>
+                    <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(60 18 18)"/>
+                    <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(120 18 18)"/>
+                  </svg>
+                </div>
+                <span className="formula formula-one">E = mc²</span>
+                <span className="formula formula-two">π</span>
+                <span className="formula formula-three">DNA</span>
+              </div>
             </div>
-            <div className="welcome-tagline">Your AI STEM Tutor</div>
-            <h1 className="welcome-name">STEMMY</h1>
-            <p className="welcome-msg">
-              Get clear, cited explanations for science, technology, engineering, and math.
-              Upload your notes or homework, and STEMMY will walk through the concepts —
-              then quiz you on what you're still working to master.
-            </p>
             <div className="welcome-partner">
               <img
                 className="welcome-partner-logo"
@@ -210,8 +231,8 @@ export default function App() {
                 onError={(e) => { (e.currentTarget.parentElement as HTMLElement).style.display = 'none'; }}
               />
               <span className="welcome-partner-text">
-                <strong>Minorities in STEM</strong>
-                An MIS initiative, built to close the opportunity gap in STEM education.
+                <strong>Created with Minorities in STEM</strong>
+                Making high-quality STEM support feel welcoming and accessible.
               </span>
             </div>
             {!user && (
@@ -220,7 +241,7 @@ export default function App() {
               </p>
             )}
             <div className="welcome-divider" />
-            <p className="welcome-hint">Try a question below or type your own ↓</p>
+            <p className="welcome-hint">What do you want to understand today?</p>
             <StarterQuestions onSelect={handleSend} />
           </div>
         </div>
