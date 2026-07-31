@@ -1883,6 +1883,238 @@ body {
   .header-quiz-btn svg { width: 17px; height: 17px; }
 }
 
+/* ── Professional workspace redesign ── */
+:root {
+  --bg: #f7f9f7;
+  --surface-2: #f6f8f6;
+  --border: #dfe5e0;
+  --border-subtle: #e8ece9;
+  --text: #172019;
+  --text-2: #35423a;
+  --text-muted: #69756d;
+  --primary: #2f7252;
+  --primary-2: #255c42;
+  --primary-light: #edf5f0;
+  --header-h: 58px;
+}
+
+body {
+  background: var(--bg);
+}
+
+.app {
+  max-width: 1080px;
+  padding-inline: 24px;
+}
+
+.header {
+  margin-top: 0;
+  height: var(--header-h);
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.header-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--primary);
+  box-shadow: none;
+}
+
+.header-title { font-size: 14px; font-weight: 750; }
+.header-subtitle { margin-top: 1px; font-size: 10px; }
+.header-badge { display: none; }
+
+.theme-btn,
+.sidebar-toggle-btn,
+.notebook-toggle-btn,
+.header-signout-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.header-signin-btn,
+.header-quiz-btn {
+  min-height: 34px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.welcome {
+  align-items: flex-start;
+  padding: 52px 0 24px;
+}
+
+.welcome-orb { display: none; }
+
+.welcome-card {
+  max-width: 760px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  animation: none;
+}
+
+.welcome-card::before { display: none; }
+
+.welcome-hero {
+  display: block;
+}
+
+.welcome-copy { max-width: 650px; }
+
+.welcome-kicker {
+  gap: 8px;
+  margin-bottom: 14px;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+}
+
+.welcome-kicker-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--primary);
+  box-shadow: none;
+}
+
+.welcome-name {
+  max-width: 620px;
+  margin-bottom: 12px;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.04em;
+  font-weight: 720;
+}
+
+.welcome-msg {
+  max-width: 570px;
+  margin-bottom: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.welcome-visual,
+.welcome-feature-row { display: none; }
+
+.welcome-partner {
+  max-width: 390px;
+  margin: 26px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.welcome-partner-logo {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border-subtle);
+}
+
+.welcome-partner-text {
+  gap: 1px;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.welcome-partner-text strong {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.welcome-anon-hint {
+  margin-top: 16px;
+  font-size: 11px;
+}
+
+.welcome-divider {
+  margin: 28px 0 18px;
+  border-color: var(--border-subtle);
+}
+
+.welcome-hint {
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.starters {
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.starter-btn {
+  min-height: 64px;
+  gap: 11px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.starter-btn:hover {
+  border-color: #c8d6cc;
+  background: #fbfcfb;
+  transform: none;
+  box-shadow: 0 4px 14px rgba(27, 55, 37, .06);
+}
+
+.starter-icon {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-2);
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.starter-subject {
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.starter-q { font-size: 11px; font-weight: 550; }
+.starter-arrow { opacity: .55; }
+
+.input-area {
+  max-width: 780px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(21, 48, 32, .06);
+}
+
+@media (max-width: 680px) {
+  :root { --header-h: 54px; }
+  .app { padding-inline: 14px; }
+  .header { margin-top: 0; border-radius: 0; }
+  .welcome { padding: 34px 4px 18px; }
+  .welcome-card { padding: 0; border-radius: 0; }
+  .welcome-name { font-size: 32px; }
+  .welcome-msg { font-size: 14px; }
+  .welcome-partner { margin-top: 22px; }
+  .welcome-divider { margin: 24px 0 16px; }
+  .starters { grid-template-columns: 1fr; }
+  .starter-btn { min-height: 58px; }
+  .input-area { width: calc(100% - 16px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
@@ -2069,4 +2301,110 @@ body {
   .welcome-partner { margin-top: 16px; }
   .welcome-divider { margin: 16px 0 13px; }
   .starter-btn { min-height: 62px; padding: 9px 10px; }
+}
+
+/* Final workspace layer — intentionally last in the cascade. */
+:root { --header-h: 58px; }
+body { background: #f7f9f7; }
+.app { max-width: 1080px; padding-inline: 24px; }
+.header {
+  height: var(--header-h);
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.header-logo { width: 32px; height: 32px; border-radius: 9px; box-shadow: none; }
+.header-title { font-size: 14px; }
+.header-subtitle { margin-top: 1px; font-size: 10px; }
+.header-badge { display: none; }
+.theme-btn,
+.sidebar-toggle-btn,
+.notebook-toggle-btn,
+.header-signout-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.header-signin-btn,
+.header-quiz-btn { min-height: 34px; border-radius: 8px; font-size: 12px; }
+.welcome { align-items: flex-start; padding: 52px 0 24px; }
+.welcome-orb { display: none; }
+.welcome-card {
+  max-width: 760px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+  animation: none;
+}
+.welcome-card::before { display: none; }
+.welcome-hero { display: block; }
+.welcome-copy { max-width: 650px; }
+.welcome-kicker { margin-bottom: 14px; font-size: 11px; }
+.welcome-kicker-dot { width: 7px; height: 7px; background: var(--primary); box-shadow: none; }
+.welcome-name {
+  max-width: 620px;
+  margin-bottom: 12px;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -.04em;
+  font-weight: 720;
+}
+.welcome-msg { max-width: 570px; margin-bottom: 0; font-size: 15px; line-height: 1.6; }
+.welcome-visual,
+.welcome-feature-row { display: none; }
+.welcome-partner {
+  max-width: 390px;
+  margin: 26px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.welcome-partner-logo { width: 28px; height: 28px; }
+.welcome-anon-hint { margin-top: 16px; font-size: 11px; }
+.welcome-divider { margin: 28px 0 18px; }
+.welcome-hint { margin-bottom: 10px; color: var(--text-muted); font-size: 11px; }
+.starters { grid-template-columns: 1fr 1fr; gap: 8px; }
+.starter-btn {
+  min-height: 64px;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+}
+.starter-btn:hover { transform: none; box-shadow: 0 4px 14px rgba(27, 55, 37, .06); }
+.starter-icon {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-2);
+  box-shadow: none;
+  font-size: 14px;
+}
+.starter-q { font-size: 11px; font-weight: 550; }
+.input-area { max-width: 780px; border-radius: 12px; }
+
+@media (max-width: 680px) {
+  :root { --header-h: 54px; }
+  .app { padding-inline: 14px; }
+  .header { margin-top: 0; border-radius: 0; }
+  .welcome { padding: 34px 4px 18px; }
+  .welcome-card { padding: 0; border-radius: 0; }
+  .welcome-name { font-size: 32px; }
+  .welcome-msg { font-size: 14px; }
+  .welcome-partner { margin-top: 22px; }
+  .welcome-divider { margin: 24px 0 16px; }
+  .starters { grid-template-columns: 1fr; }
+  .starter-btn { min-height: 58px; }
+  .input-area { width: calc(100% - 16px); }
 }

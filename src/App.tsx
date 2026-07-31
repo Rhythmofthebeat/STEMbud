@@ -191,36 +191,15 @@ export default function App() {
               <div className="welcome-copy">
                 <div className="welcome-kicker">
                   <span className="welcome-kicker-dot" />
-                  Built for curious minds
+                  AI STEM tutor
                 </div>
                 <h1 className="welcome-name">
-                  STEM makes more sense
-                  <span> when it feels personal.</span>
+                  How can I help you learn today?
                 </h1>
                 <p className="welcome-msg">
-                  Meet STEMMY, your always-ready tutor for clear explanations, guided
-                  problem solving, and study help that moves at your pace.
+                  Get clear explanations, work through a problem step by step, or upload
+                  an assignment for focused support.
                 </p>
-                <div className="welcome-feature-row">
-                  <span>Step-by-step help</span>
-                  <span>Homework scan</span>
-                  <span>Smart quizzes</span>
-                </div>
-              </div>
-              <div className="welcome-visual" aria-hidden="true">
-                <div className="welcome-visual-ring ring-one" />
-                <div className="welcome-visual-ring ring-two" />
-                <div className="welcome-avatar">
-                  <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
-                    <circle cx="18" cy="18" r="4" fill="white"/>
-                    <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none"/>
-                    <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(60 18 18)"/>
-                    <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2" fill="none" transform="rotate(120 18 18)"/>
-                  </svg>
-                </div>
-                <span className="formula formula-one">E = mc²</span>
-                <span className="formula formula-two">π</span>
-                <span className="formula formula-three">DNA</span>
               </div>
             </div>
             <div className="welcome-partner">
@@ -241,7 +220,7 @@ export default function App() {
               </p>
             )}
             <div className="welcome-divider" />
-            <p className="welcome-hint">What do you want to understand today?</p>
+            <p className="welcome-hint">Start with a common question</p>
             <StarterQuestions onSelect={handleSend} />
           </div>
         </div>
