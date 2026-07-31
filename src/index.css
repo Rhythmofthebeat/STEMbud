@@ -1891,3 +1891,182 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Professional density pass ── */
+:root { --header-h: 60px; }
+
+.app {
+  max-width: 1000px;
+  padding-inline: 20px;
+}
+
+.header {
+  margin-top: 10px;
+  padding: 0 10px 0 14px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(21, 48, 32, .07);
+}
+
+.header-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  box-shadow: 0 5px 14px rgba(47, 103, 73, .2);
+}
+
+.header-signin-btn,
+.header-quiz-btn { min-height: 34px; }
+
+.welcome { padding: 26px 0 20px; }
+
+.welcome-card {
+  max-width: 900px;
+  padding: 30px 32px 26px;
+  border-radius: 20px;
+  box-shadow: 0 14px 42px rgba(21, 48, 32, .09);
+}
+
+.welcome-card::before {
+  width: 280px;
+  height: 280px;
+  right: -130px;
+  top: -170px;
+}
+
+.welcome-hero {
+  grid-template-columns: minmax(0, 1.55fr) minmax(180px, .55fr);
+  gap: 32px;
+}
+
+.welcome-kicker {
+  gap: 7px;
+  margin-bottom: 12px;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+.welcome-kicker-dot {
+  width: 6px;
+  height: 6px;
+  box-shadow: 0 0 0 4px rgba(228, 129, 73, .1);
+}
+
+.welcome-name {
+  max-width: 570px;
+  margin-bottom: 12px;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.04;
+  letter-spacing: -.045em;
+}
+
+.welcome-msg {
+  max-width: 590px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.welcome-feature-row { gap: 7px; }
+.welcome-feature-row span {
+  gap: 5px;
+  padding: 6px 9px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.welcome-visual { min-height: 176px; }
+.welcome-visual::before {
+  inset: 12px;
+  border-radius: 28px 46px 30px 52px;
+}
+
+.welcome-avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 22px;
+  box-shadow: 0 12px 28px rgba(46, 105, 74, .24);
+}
+.welcome-avatar svg { width: 40px; height: 40px; }
+.ring-one { width: 122px; height: 122px; }
+.ring-two { width: 150px; height: 150px; }
+
+.formula {
+  min-width: 36px;
+  height: 36px;
+  padding-inline: 9px;
+  border-radius: 10px;
+  font-size: 10px;
+}
+.formula-one { top: 18px; }
+.formula-two { top: 30px; font-size: 16px; }
+.formula-three { bottom: 7px; }
+
+.welcome-partner {
+  margin-top: 20px;
+  padding: 7px 11px 7px 7px;
+}
+.welcome-partner-logo { width: 30px; height: 30px; }
+.welcome-anon-hint { margin-top: 11px; }
+.welcome-divider { margin: 20px 0 16px; }
+.welcome-hint { margin-bottom: 10px; font-size: 12px; }
+
+.starters { gap: 8px; }
+.starter-btn {
+  min-height: 76px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 11px;
+  border-radius: 13px;
+}
+.starter-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(35, 74, 50, .09);
+}
+.starter-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border-radius: 9px;
+  font-size: 15px;
+}
+.starter-content { padding-right: 14px; }
+.starter-subject { font-size: 9px; }
+.starter-q { font-size: 11px; line-height: 1.35; }
+.starter-arrow { right: 10px; top: 50%; transform: translateY(-50%); }
+.starter-btn:hover .starter-arrow { transform: translate(2px, -50%); }
+
+.chat-main { padding-top: 24px; }
+.input-area {
+  border-radius: 15px;
+  box-shadow: 0 6px 20px rgba(21, 48, 32, .07);
+}
+
+@media (max-width: 900px) {
+  .welcome-card { padding: 28px 26px 24px; }
+  .welcome-hero { grid-template-columns: 1fr minmax(170px, .48fr); gap: 24px; }
+  .welcome-name { font-size: clamp(31px, 5.5vw, 43px); }
+}
+
+@media (max-width: 680px) {
+  :root { --header-h: 56px; }
+  .app { padding-inline: 10px; }
+  .header { margin-top: 6px; border-radius: 12px; }
+  .header-logo { width: 34px; height: 34px; }
+  .welcome { padding: 14px 0 12px; }
+  .welcome-card { padding: 22px 18px 18px; border-radius: 17px; }
+  .welcome-hero { gap: 15px; }
+  .welcome-visual { min-height: 94px; }
+  .welcome-visual::before { inset: 0 25%; border-radius: 24px 36px; }
+  .welcome-avatar { width: 58px; height: 58px; border-radius: 17px; }
+  .welcome-avatar svg { width: 31px; height: 31px; }
+  .ring-one { width: 82px; height: 82px; }
+  .ring-two { width: 100px; height: 100px; }
+  .formula { display: none; }
+  .welcome-name { font-size: clamp(29px, 9vw, 36px); }
+  .welcome-msg { margin-bottom: 13px; font-size: 13px; }
+  .welcome-partner { margin-top: 16px; }
+  .welcome-divider { margin: 16px 0 13px; }
+  .starter-btn { min-height: 62px; padding: 9px 10px; }
+}
