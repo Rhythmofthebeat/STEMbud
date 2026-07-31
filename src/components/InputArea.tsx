@@ -211,7 +211,6 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             onClick={() => setCameraOpen(true)}
             disabled={uploading || isLoading}
             title="Scan a worksheet with your camera"
-            aria-label="Scan a worksheet with your camera"
           >
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
               <path d="M3 7.5A1.5 1.5 0 0 1 4.5 6H6l.6-1.4A1 1 0 0 1 7.5 4h5a1 1 0 0 1 .9.6L14 6h1.5A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5v-7Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
@@ -223,8 +222,6 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             onClick={handleMicClick}
             disabled={uploading || isLoading || transcribing}
             title={recording ? 'Stop recording' : 'Speak your question — any language'}
-            aria-label={recording ? 'Stop recording' : 'Speak your question'}
-            aria-pressed={recording}
           >
             {transcribing ? (
               <svg className="spin" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
@@ -242,7 +239,6 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading || isLoading}
             title="Attach a document (PDF, DOCX, TXT, MD) or image for STEMMY to read — or drag and drop it here"
-            aria-label="Attach a document or image"
           >
             {uploading ? (
               <svg className="spin" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
@@ -259,7 +255,6 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             onClick={handleSend}
             disabled={!canSend}
             title="Send (Enter)"
-            aria-label="Send message"
           >
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
               <path d="M17 3 2 9.5l6.2 2.3M17 3 8.2 11.8m8.8-8.8-3.2 13.8-5.4-5.7" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round"/>
