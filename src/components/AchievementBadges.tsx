@@ -74,7 +74,7 @@ export default function AchievementBadges({ achievements, newBadge, progress, st
           <span className="toast-emoji">{newBadge.emoji}</span>
           <div className="toast-body">
             <div className="toast-title">Milestone reached</div>
-            <div className="toast-desc">{newBadge.name} — {newBadge.description}</div>
+            <div className="toast-desc">{newBadge.name}, {newBadge.description}</div>
           </div>
           <button className="toast-close">×</button>
         </div>

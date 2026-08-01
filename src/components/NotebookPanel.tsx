@@ -113,7 +113,7 @@ export default function NotebookPanel({ open, notes, onCreate, onUpdate, onDelet
 
             <div className="sidebar-list">
               {notes.length === 0 && (
-                <div className="sidebar-empty">No notes yet — jot something down.</div>
+                <div className="sidebar-empty">No notes yet, jot something down.</div>
               )}
               {notes.map((n) => (
                 <div key={n.id} className="sidebar-item">

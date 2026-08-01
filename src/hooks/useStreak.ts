@@ -28,7 +28,7 @@ export function useStreak(userId: string | null, messageCount: number) {
   const streakRef = useRef(streak);
   streakRef.current = streak;
   // Same race this hook's sibling (useAchievements) had: for signed-in users the existing
-  // streak loads asynchronously, so the "record today" check below must wait for it —
+  // streak loads asynchronously, so the "record today" check below must wait for it ,
   // otherwise it'd compare against the empty initial state and could clobber a real streak.
   const [loaded, setLoaded] = useState(false);
 
@@ -55,7 +55,7 @@ export function useStreak(userId: string | null, messageCount: number) {
       });
   }, [userId]);
 
-  // Record today's activity the first time a message is sent — idempotent per day,
+  // Record today's activity the first time a message is sent, idempotent per day,
   // so repeat messages or reloads on the same day are safe no-ops.
   useEffect(() => {
     if (!loaded || messageCount === 0) return;
@@ -72,7 +72,7 @@ export function useStreak(userId: string | null, messageCount: number) {
     setStreak(next);
 
     if (userId) {
-      // supabase-js query builders are lazy thenables — a bare `void builder` with no
+      // supabase-js query builders are lazy thenables, a bare `void builder` with no
       // await/.then() never actually sends the request. Must chain .then() (or await) to fire it.
       supabase
         .from('profiles')

@@ -21,13 +21,13 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-// Publishable key only — sufficient to validate a user's access token via getUser().
+// Publishable key only, sufficient to validate a user's access token via getUser().
 const supabaseAuth = createClient(
   'https://xjydqqhfbaskvfumdbjr.supabase.co',
   'sb_publishable_pNwEPf2ZbnECRkBFFKuZJw_MtvgNKaT'
 );
 
-// Identifies the caller if they sent a valid Supabase session token, but never blocks the request —
+// Identifies the caller if they sent a valid Supabase session token, but never blocks the request ,
 // the app is usable anonymously; signed-in users just get unlimited access + saved history.
 async function attachUser(req: express.Request, _res: express.Response, next: express.NextFunction) {
   const authHeader = req.headers.authorization ?? '';
@@ -72,7 +72,7 @@ if (process.env.NODE_ENV === 'production') {
   }
 }
 
-// Config endpoint (safe — no secrets)
+// Config endpoint (safe, no secrets)
 app.get('/api/config', (_req, res) => {
   const vectorStoreConfigured =
     !!config.vector_store_id &&
@@ -126,7 +126,7 @@ app.post('/api/chat', attachUser, anonUsageLimiter, async (req, res) => {
       } as OpenAI.Responses.Tool);
     }
 
-    // Build input — array form with an input_file/input_image content part lets the model
+    // Build input, array form with an input_file/input_image content part lets the model
     // read an ad-hoc attachment (or a scanned worksheet photo) directly, separate from the
     // persistent vector-store corpus.
     let input: string | OpenAI.Responses.MessageParam[];
@@ -221,7 +221,7 @@ app.post('/api/title', attachUser, anonUsageLimiter, async (req, res) => {
 
 // File types the file_search tool can actually extract text from
 const SUPPORTED_UPLOAD_EXTENSIONS = ['.pdf', '.txt', '.docx', '.md'];
-// Scanned/photographed worksheets — read directly as an image, not through file_search
+// Scanned/photographed worksheets, read directly as an image, not through file_search
 const SUPPORTED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
 // File upload endpoint (documents and scanned worksheet photos)
@@ -254,7 +254,7 @@ app.post('/api/upload', attachUser, anonUsageLimiter, upload.single('file'), asy
   }
 });
 
-// Voice input: transcribes a recorded audio clip (any language — auto-detected by the model)
+// Voice input: transcribes a recorded audio clip (any language, auto-detected by the model)
 app.post('/api/transcribe', attachUser, anonUsageLimiter, upload.single('audio'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No audio provided' });
 

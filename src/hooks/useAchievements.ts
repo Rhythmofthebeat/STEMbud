@@ -57,7 +57,7 @@ export function useAchievements(userId: string | null, messageCount: number) {
 
   // Tick every minute once user has sent at least one message. Paused whenever the tab
   // isn't visible so leaving the app open in a background tab doesn't silently rack up
-  // "learning" minutes — without this, a long background stretch could push minutesUsed
+  // "learning" minutes, without this, a long background stretch could push minutesUsed
   // past a badge threshold unseen, and the next reload/refocus would look like the badge
   // unlocked "automatically."
   useEffect(() => {
@@ -96,7 +96,7 @@ export function useAchievements(userId: string | null, messageCount: number) {
     if (!def) return;
     setNewBadge({ ...def, unlocked: true, unlockedAt: Date.now() });
     if (userId) {
-      // Note: supabase-js query builders are lazy thenables — they only actually send the
+      // Note: supabase-js query builders are lazy thenables, they only actually send the
       // request once awaited or .then()'d. A bare `void builder` (no await/.then) silently
       // never fires the request at all, which is why this never used to persist.
       supabase

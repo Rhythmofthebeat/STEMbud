@@ -47,7 +47,7 @@ async function generateTitle(
     const { title } = await res.json();
     if (title) await supabase.from('conversations').update({ title }).eq('id', conversationId).eq('user_id', userId);
   } catch {
-    // Non-critical — the sidebar just falls back to the first-message preview.
+    // Non-critical, the sidebar just falls back to the first-message preview.
   }
 }
 
@@ -221,7 +221,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
       if (mostRecent) {
         await loadConversation(mostRecent.id);
       } else {
-        // No saved conversation for this account — clear out anything left over
+        // No saved conversation for this account, clear out anything left over
         // from an anonymous session rather than carrying it into the signed-in view.
         setMessages([]);
         setConversationId(null);
@@ -245,7 +245,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
     async (convId: string, msg: Message) => {
       if (!userId) return;
       // Note: `msg.id` is a client-generated string (e.g. "msg-1-...") used only for local
-      // React state reconciliation — it's never sent here, since the messages table's `id`
+      // React state reconciliation, it's never sent here, since the messages table's `id`
       // is a uuid with its own default. History reloads use the DB's own ids instead.
       const { error } = await supabase.from('messages').insert({
         conversation_id: convId,
@@ -321,7 +321,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
         if (remainingHeader !== null && limitHeader !== null) {
           setAnonQuota({ remaining: parseInt(remainingHeader, 10), limit: parseInt(limitHeader, 10) });
         } else if (userId) {
-          setAnonQuota(null); // signed-in requests skip the limiter entirely — no cap to show
+          setAnonQuota(null); // signed-in requests skip the limiter entirely, no cap to show
         }
 
         if (res.status === 429) {
@@ -419,7 +419,7 @@ export function useChat(userId: string | null, accessToken: string | null, onRat
 
   const generateQuiz = useCallback(() => {
     sendMessage(
-      "Based on everything we've discussed so far, generate a short quiz (4-6 questions) focused on the topics I've struggled with the most. Mix multiple-choice and short-answer questions. Do NOT include the answers yet — just number the questions and wait for me to answer them. Once I reply with my answers, grade them and walk through the correct answers with brief explanations."
+      "Based on everything we've discussed so far, generate a short quiz (4-6 questions) focused on the topics I've struggled with the most. Mix multiple-choice and short-answer questions. Do NOT include the answers yet, just number the questions and wait for me to answer them. Once I reply with my answers, grade them and walk through the correct answers with brief explanations."
     );
   }, [sendMessage]);
 

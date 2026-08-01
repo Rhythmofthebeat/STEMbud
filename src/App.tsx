@@ -104,7 +104,7 @@ export default function App() {
 
   const hasMessages = messages.length > 0;
   // Gate on actual usable content (a completed, non-error answer) rather than a raw turn
-  // count — loading an old conversation with plenty of history should enable this immediately,
+  // count, loading an old conversation with plenty of history should enable this immediately,
   // and a single solid exchange is already enough to quiz on.
   const hasQuizzableContent = messages.some(
     (m) => m.role === 'assistant' && m.content.trim().length > 0 && !m.error && !m.isStreaming
@@ -216,7 +216,7 @@ export default function App() {
             </div>
             {!user && (
               <p className="welcome-anon-hint">
-                Chat freely below — <button className="auth-inline-link" onClick={() => openAuthModal()}>sign in</button> to save your history across devices.
+                Chat freely below, <button className="auth-inline-link" onClick={() => openAuthModal()}>sign in</button> to save your history across devices.
               </p>
             )}
             <div className="welcome-divider" />

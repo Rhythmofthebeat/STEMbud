@@ -221,7 +221,7 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             className={`attach-btn ${recording ? 'mic-recording' : ''}`}
             onClick={handleMicClick}
             disabled={uploading || isLoading || transcribing}
-            title={recording ? 'Stop recording' : 'Speak your question — any language'}
+            title={recording ? 'Stop recording' : 'Speak your question, any language'}
           >
             {transcribing ? (
               <svg className="spin" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">

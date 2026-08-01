@@ -102,7 +102,7 @@ export default function Sidebar({
 
         <div className="sidebar-list">
           {conversations.length === 0 && (
-            <div className="sidebar-empty">No saved chats yet — start one below.</div>
+            <div className="sidebar-empty">No saved chats yet, start one below.</div>
           )}
           {conversations.map((c) => (
             <div key={c.id} className={`sidebar-item ${c.id === activeId ? 'active' : ''}`}>

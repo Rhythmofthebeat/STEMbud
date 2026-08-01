@@ -8,12 +8,12 @@ AI-powered STEM homework helper built with React + TypeScript (Vite) frontend an
 - **Backend**: Express 4, TypeScript, tsx (port 3001 in dev, $PORT in production)
 - **AI**: OpenAI Responses API (`client.responses.create`) with file_search tool
 - **Storage**: OpenAI Vector Store (corpus pre-loaded, ID in `config.json`)
-- **Auth & data**: Supabase (email/password auth, Postgres for achievements + chat history). Project URL and publishable key are hardcoded in `src/lib/supabase.ts` / `server.ts` — safe to expose, access is enforced entirely by Postgres RLS policies (see `supabase/migrations/`). `/api/chat` and `/api/upload` reject any request without a valid Supabase session token.
+- **Auth & data**: Supabase (email/password auth, Postgres for achievements + chat history). Project URL and publishable key are hardcoded in `src/lib/supabase.ts` / `server.ts`, safe to expose, access is enforced entirely by Postgres RLS policies (see `supabase/migrations/`). `/api/chat` and `/api/upload` reject any request without a valid Supabase session token.
 
 ## Setup
 
 ### Required secrets (Replit Secrets)
-- `OPENAI_API_KEY` — your OpenAI API key
+- `OPENAI_API_KEY`, your OpenAI API key
 
 ### Required config
 Edit `config.json` and replace `YOUR_VECTOR_STORE_ID_HERE` with your actual OpenAI Vector Store ID (find it in the OpenAI dashboard under Storage → Vector Stores):
@@ -66,5 +66,5 @@ NODE_ENV=production npx tsx server.ts   # serves dist/ + API on $PORT
 ## User Preferences
 
 - Keep `config.json` as the single source of truth for the assistant name, instructions, model, and vector store ID.
-- Never hardcode the OpenAI API key — always read from `process.env.OPENAI_API_KEY`.
+- Never hardcode the OpenAI API key, always read from `process.env.OPENAI_API_KEY`.
 - Use the OpenAI Responses API (`client.responses.create`), not the deprecated Assistants API.
