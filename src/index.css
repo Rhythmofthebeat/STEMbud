@@ -3,15 +3,15 @@
 :root {
   font-family: 'DM Sans', Inter, system-ui, sans-serif;
   color: #17211a;
-  background: #f5f7f5;
+  background: #edf7f0;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --bg: #f5f7f5;
+  --bg: #edf7f0;
   --surface: #ffffff;
-  --surface-soft: #f7f9f7;
+  --surface-soft: #f4f9f5;
   --surface-raised: #ffffff;
-  --border: #dfe5e0;
-  --border-soft: #e9edea;
+  --border: #d7e4da;
+  --border-soft: #e2ece5;
   --text: #17211a;
   --text-2: #3d4941;
   --muted: #6f7b73;
@@ -52,7 +52,12 @@
 
 * { box-sizing: border-box; }
 html, body, #root { width: 100%; height: 100%; margin: 0; }
-body { min-width: 320px; overflow: hidden; background: var(--bg); color: var(--text); }
+body {
+  min-width: 320px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #f2faf4 0%, var(--bg) 100%);
+  color: var(--text);
+}
 button, input, textarea { font: inherit; }
 button { color: inherit; }
 button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible {
@@ -69,8 +74,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 24px;
-  background: var(--bg);
+  background: transparent;
 }
+.app[data-theme='dark'] { background: var(--bg); }
 
 /* Header */
 .header {
