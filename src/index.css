@@ -19,6 +19,7 @@
   --green: #347a4b;
   --green-dark: #245d38;
   --green-soft: #e3f1e6;
+  --green-light: #a8d9a9;
   --red: #b44747;
   --red-soft: #fbeeee;
   --amber: #a66a29;
@@ -99,12 +100,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   width: 34px;
   height: 34px;
   place-items: center;
-  border-radius: 9px;
-  background: var(--green);
+  border: 1px solid #b9dcbc;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #effaef, #cdeacd);
+  color: var(--green-dark);
+  box-shadow: 0 5px 14px rgba(52, 122, 75, .12);
 }
-.header-logo svg { width: 19px; height: 19px; }
+.header-logo svg { width: 23px; height: 23px; }
 .header-info { min-width: 0; }
-.header-title { font-size: 14px; font-weight: 700; letter-spacing: -.02em; }
+.header-title { font-size: 15px; font-weight: 700; letter-spacing: -.03em; }
+.header-title span { color: var(--text); }
+.header-title strong { color: #69aa72; font-weight: 700; }
 .header-subtitle { margin-top: 1px; overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .header-badge { display: none; }
 .theme-btn, .sidebar-toggle-btn, .notebook-toggle-btn, .header-signout-btn {
@@ -149,7 +155,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   overflow-y: auto;
   padding: 54px 0 190px;
 }
-.welcome-orb { display: none; }
+.welcome-orb { position: absolute; display: block; pointer-events: none; opacity: .55; filter: blur(1px); }
+.welcome-orb::before, .welcome-orb::after { content: ''; position: absolute; border: 1px solid rgba(74, 137, 84, .18); border-radius: 100% 0 100% 0; background: rgba(211, 237, 211, .35); transform: rotate(35deg); }
+.welcome-orb::before { width: 90px; height: 44px; }
+.welcome-orb::after { width: 56px; height: 28px; transform: translate(62px, 46px) rotate(215deg); }
+.welcome-orb-1 { top: 56px; right: 6%; }
+.welcome-orb-2 { bottom: 210px; left: 1%; transform: scale(.72) rotate(-20deg); }
 .welcome-card {
   position: relative;
   width: 100%;
@@ -162,7 +173,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 .welcome-hero { display: block; }
 .welcome-copy { max-width: 630px; }
 .welcome-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; color: var(--green); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.welcome-kicker-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.welcome-kicker-dot { width: 9px; height: 9px; border-radius: 70% 0 70% 0; background: var(--green-light); transform: rotate(-25deg); box-shadow: 5px -3px 0 -2px var(--green); }
 .welcome-name { max-width: 620px; margin: 0 0 13px; color: var(--text); font-size: clamp(36px, 4.2vw, 48px); font-weight: 700; letter-spacing: -.045em; line-height: 1.06; }
 .welcome-name span { color: var(--green); }
 .welcome-msg { max-width: 570px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.65; }

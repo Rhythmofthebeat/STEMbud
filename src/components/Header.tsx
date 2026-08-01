@@ -41,15 +41,15 @@ export default function Header({
 
       <div className="header-brand">
         <div className="header-logo">
-          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
-            <circle cx="18" cy="18" r="4" fill="white"/>
-            <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2.2" fill="none"/>
-            <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2.2" fill="none" transform="rotate(60 18 18)"/>
-            <ellipse cx="18" cy="18" rx="16" ry="6.5" stroke="white" strokeWidth="2.2" fill="none" transform="rotate(120 18 18)"/>
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M18 29V17" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
+            <path d="M18 20c-6.7-.3-10.2-3.8-10.5-10.5C14.2 9.8 17.7 13.3 18 20Z" fill="currentColor" opacity=".86"/>
+            <path d="M18 16.2c.3-5.7 3.4-8.8 9.1-9.1-.3 5.7-3.4 8.8-9.1 9.1Z" fill="currentColor"/>
+            <path d="M12 28.8h12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" opacity=".55"/>
           </svg>
         </div>
         <div className="header-info">
-          <div className="header-title">STEMbud</div>
+          <div className="header-title"><span>STEM</span><strong>bud</strong></div>
           <div className="header-subtitle">Your AI STEM study partner</div>
         </div>
       </div>
