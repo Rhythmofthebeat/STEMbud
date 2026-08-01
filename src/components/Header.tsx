@@ -49,8 +49,8 @@ export default function Header({
           </svg>
         </div>
         <div className="header-info">
-          <div className="header-title">STEMMY</div>
-          <div className="header-subtitle">AI STEM Tutor · Minorities in STEM</div>
+          <div className="header-title">STEMbud</div>
+          <div className="header-subtitle">Your AI STEM study partner</div>
         </div>
       </div>
 

@@ -72,7 +72,7 @@ export default function AuthScreen({ onSignIn, onSignUp, onRequestPasswordReset,
           </svg>
         </div>
         <div className="welcome-tagline">Your AI STEM Tutor</div>
-        <h1 className="welcome-name">STEMMY</h1>
+        <h1 className="welcome-name">STEMbud</h1>
         <p className="welcome-msg">{heading}</p>
 
         <form className="auth-form" onSubmit={handleSubmit}>

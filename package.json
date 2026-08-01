@@ -1,7 +1,7 @@
 {
   "name": "mis-stembud",
   "version": "1.0.0",
-  "description": "STEMMY - AI-powered STEM tutor by Minorities in STEM",
+  "description": "STEMbud, an AI-powered STEM tutor by Minorities in STEM",
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail \"npx tsx watch server.ts\" \"vite\"",

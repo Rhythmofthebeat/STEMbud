@@ -238,7 +238,7 @@ export default function InputArea({ onSend, isLoading, uploadedFile, onUpload, o
             className="attach-btn"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading || isLoading}
-            title="Attach a document (PDF, DOCX, TXT, MD) or image for STEMMY to read — or drag and drop it here"
+            title="Attach a document or image for STEMbud to read, or drag and drop it here"
           >
             {uploading ? (
               <svg className="spin" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">

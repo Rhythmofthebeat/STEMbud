@@ -67,7 +67,7 @@ export default function SharedConversationView({ token }: Props) {
             <h1 className="welcome-name">Link not found</h1>
             <p className="welcome-msg">This shared conversation doesn't exist, or is no longer being shared.</p>
             <a className="auth-submit" style={{ display: 'inline-block', textDecoration: 'none', marginTop: 8 }} href="/">
-              Go to STEMMY
+              Go to STEMbud
             </a>
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function SharedConversationView({ token }: Props) {
           </div>
           <div className="header-info">
             <div className="header-title">{title ?? 'Shared conversation'}</div>
-            <div className="header-subtitle">Shared from STEMMY · read-only</div>
+            <div className="header-subtitle">Shared from STEMbud · read-only</div>
           </div>
         </div>
       </header>
@@ -101,7 +101,7 @@ export default function SharedConversationView({ token }: Props) {
       </div>
 
       <div className="shared-footer">
-        <a href="/" className="auth-inline-link">Ask your own question on STEMMY →</a>
+        <a href="/" className="auth-inline-link">Ask your own question on STEMbud →</a>
       </div>
     </div>
   );
