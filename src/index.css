@@ -3,10 +3,10 @@
 :root {
   font-family: 'DM Sans', Inter, system-ui, sans-serif;
   color: #183022;
-  background: #eaf5ec;
+  background: #f3efe5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --bg: #eaf5ec;
+  --bg: #f3efe5;
   --surface: #ffffff;
   --surface-soft: #f3f8f3;
   --surface-raised: #ffffff;
@@ -56,9 +56,7 @@ html, body, #root { width: 100%; height: 100%; margin: 0; }
 body {
   min-width: 320px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(178, 216, 185, .38), transparent 30%),
-    linear-gradient(180deg, #f5fbf5 0%, var(--bg) 100%);
+  background: linear-gradient(180deg, #f8f5ed 0%, var(--bg) 100%);
   color: var(--text);
 }
 button, input, textarea { font: inherit; }
@@ -96,17 +94,13 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 .header-brand { display: flex; min-width: 0; align-items: center; gap: 11px; margin-right: auto; }
 .header-logo {
   display: grid;
-  flex: 0 0 34px;
-  width: 34px;
+  flex: 0 0 30px;
+  width: 30px;
   height: 34px;
   place-items: center;
-  border: 1px solid #8fa46d;
-  border-radius: 10px;
-  background: linear-gradient(145deg, #afc491, #98ad75);
-  color: var(--green-dark);
-  box-shadow: 0 5px 14px rgba(82, 104, 60, .16);
+  color: #829d61;
 }
-.header-logo svg { width: 23px; height: 23px; }
+.header-logo svg { width: 27px; height: 27px; }
 .header-info { min-width: 0; }
 .header-title { font-size: 15px; font-weight: 700; letter-spacing: -.03em; }
 .header-title span { color: var(--text); }
@@ -155,12 +149,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   overflow-y: auto;
   padding: 54px 0 190px;
 }
-.welcome-orb { position: absolute; display: block; pointer-events: none; opacity: .55; filter: blur(1px); }
-.welcome-orb::before, .welcome-orb::after { content: ''; position: absolute; border: 1px solid rgba(74, 137, 84, .18); border-radius: 100% 0 100% 0; background: rgba(211, 237, 211, .35); transform: rotate(35deg); }
-.welcome-orb::before { width: 90px; height: 44px; }
-.welcome-orb::after { width: 56px; height: 28px; transform: translate(62px, 46px) rotate(215deg); }
-.welcome-orb-1 { top: 56px; right: 6%; }
-.welcome-orb-2 { bottom: 210px; left: 1%; transform: scale(.72) rotate(-20deg); }
+.welcome-orb { display: none; }
 .welcome-card {
   position: relative;
   width: 100%;
