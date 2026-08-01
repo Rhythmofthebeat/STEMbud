@@ -16,10 +16,10 @@
   --text-2: #3b5243;
   --muted: #687a6d;
   --faint: #98a19b;
-  --green: #347a4b;
-  --green-dark: #245d38;
-  --green-soft: #e3f1e6;
-  --green-light: #a8d9a9;
+  --green: #718a55;
+  --green-dark: #52683c;
+  --green-soft: #e9efdf;
+  --green-light: #a4b985;
   --red: #b44747;
   --red-soft: #fbeeee;
   --amber: #a66a29;
@@ -100,17 +100,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   width: 34px;
   height: 34px;
   place-items: center;
-  border: 1px solid #b9dcbc;
+  border: 1px solid #8fa46d;
   border-radius: 10px;
-  background: linear-gradient(145deg, #effaef, #cdeacd);
+  background: linear-gradient(145deg, #afc491, #98ad75);
   color: var(--green-dark);
-  box-shadow: 0 5px 14px rgba(52, 122, 75, .12);
+  box-shadow: 0 5px 14px rgba(82, 104, 60, .16);
 }
 .header-logo svg { width: 23px; height: 23px; }
 .header-info { min-width: 0; }
 .header-title { font-size: 15px; font-weight: 700; letter-spacing: -.03em; }
 .header-title span { color: var(--text); }
-.header-title strong { color: #69aa72; font-weight: 700; }
+.header-title strong { color: #829d61; font-weight: 700; }
 .header-subtitle { margin-top: 1px; overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .header-badge { display: none; }
 .theme-btn, .sidebar-toggle-btn, .notebook-toggle-btn, .header-signout-btn {
