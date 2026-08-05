@@ -28,7 +28,7 @@ export default function App() {
     user,
     loading: authLoading,
     passwordRecovery,
-    signIn,
+    signIn, signInWithGoogle,
     signUp,
     signOut,
     requestPasswordReset,
@@ -143,6 +143,7 @@ export default function App() {
         <div className="auth-modal-backdrop" onClick={(e) => e.target === e.currentTarget && setAuthModalOpen(false)}>
           <AuthScreen
             onSignIn={signIn}
+            onSignInWithGoogle={signInWithGoogle}
             onSignUp={signUp}
             onRequestPasswordReset={requestPasswordReset}
             onClose={() => setAuthModalOpen(false)}
