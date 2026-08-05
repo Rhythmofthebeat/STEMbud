@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import supabase from '../lib/supabase';
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
@@ -35,6 +35,14 @@ export function useAuth() {
     if (error) throw error;
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) throw error;
+  }, []);
+
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
   }, []);
@@ -59,6 +67,7 @@ export function useAuth() {
     passwordRecovery,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
     requestPasswordReset,
     updatePassword,
