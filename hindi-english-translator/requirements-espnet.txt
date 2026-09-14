@@ -1,0 +1,3 @@
+# Install alongside requirements.txt; checkpoint-specific extras may be required.
+espnet
+espnet-model-zoo
