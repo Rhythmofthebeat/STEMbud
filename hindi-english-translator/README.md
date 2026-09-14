@@ -87,5 +87,3 @@ The speech pipeline is: **audio → ESPnet or SpeechBrain → transcript → Mar
 | Gradio | The Python library providing the browser interface. |
 
 This project integrates pretrained models with Python, PyTorch, and Transformers. It is a cascaded speech-translation application, with separate recognition and translation stages.
-
-See [verified results and accuracy limitations](VALIDATION.md).
