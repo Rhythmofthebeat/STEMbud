@@ -7,7 +7,9 @@
     "dev": "concurrently --kill-others-on-fail \"npx tsx watch server.ts\" \"vite\"",
     "build": "vite build",
     "start": "NODE_ENV=production npx tsx server.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ml:train": "python3 -m ml_workbench train",
+    "ml:predict": "python3 -m ml_workbench predict"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",

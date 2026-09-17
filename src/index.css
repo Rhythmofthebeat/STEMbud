@@ -422,3 +422,49 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* Community photos and founding story */
+.welcome-about {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+.welcome-about h2 {
+  margin-bottom: 12px;
+  color: var(--text);
+  font-size: 22px;
+  line-height: 1.3;
+}
+.welcome-about > p:not(.welcome-tagline) {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.welcome-about .welcome-community {
+  margin-bottom: 0;
+}
+.welcome-frc-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 28px;
+  border-radius: 12px;
+}
+.welcome-community {
+  margin: 0 0 24px;
+  text-align: left;
+}
+.welcome-community img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+.welcome-community figcaption {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
