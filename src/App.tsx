@@ -188,15 +188,6 @@ export default function App() {
           <div className="welcome-orb welcome-orb-1" />
           <div className="welcome-orb welcome-orb-2" />
           <div className="welcome-card">
-            <figure className="welcome-community">
-              <img
-                src="/stem-hands-on-learning.jpg"
-                alt="A young participant examining a drone frame in a classroom with other learners."
-                width={3600}
-                height={2400}
-              />
-              <figcaption>Curiosity in action · Minorities in STEM, Kenya Chapter</figcaption>
-            </figure>
             <div className="welcome-hero">
               <div className="welcome-copy">
                 <div className="welcome-kicker">
@@ -232,33 +223,6 @@ export default function App() {
             <div className="welcome-divider" />
             <p className="welcome-hint">Start with a common question</p>
             <StarterQuestions onSelect={handleSend} />
-            <section className="welcome-about" id="about-us" aria-labelledby="about-us-title">
-              <p className="welcome-tagline">About us</p>
-              <h2 id="about-us-title">Where it all started</h2>
-              <p>
-                Our story began with our first robotics workshop — a starting point
-                for Minorities in STEM and our commitment to making STEM learning
-                more accessible.
-              </p>
-              <figure className="welcome-community">
-                <img
-                  src="/first-workshop.png"
-                  alt="Our first robotics workshop: a classroom with robotics kits and a welcome presentation."
-                  width={1414}
-                  height={1050}
-                  loading="lazy"
-                />
-                <figcaption>Our first robotics workshop · The beginning of Minorities in STEM</figcaption>
-              </figure>
-            </section>
-            <img
-              className="welcome-frc-photo"
-              src="/supporting-frc-teams.png"
-              alt="A group of young people posing together in a classroom, including participants wearing robotics team shirts."
-              width={788}
-              height={442}
-              loading="lazy"
-            />
           </div>
         </div>
       )}
